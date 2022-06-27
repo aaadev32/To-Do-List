@@ -1,5 +1,13 @@
+html{
+    height: 100%;
+    overflow: auto;
+}
 body {
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: scroll;
 }
 
 #header {
@@ -8,7 +16,8 @@ body {
     background-color: rebeccapurple;
     width: 100%;
     height: 50px;
-    position: fixed;
+    top: 0;
+    border-bottom:4px solid black;
 }
 
 #menu-icon {
@@ -24,4 +33,29 @@ body {
 
 #project-logo {
     margin: auto;
+}
+
+#sidebar-content-container{
+    display: flex;
+    height: 100%;
+}
+
+#sidebar{
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+    height: 100%;
+    left: 0pt;
+    border: 2px solid black;
+}
+
+#content{
+    border: 2px dotted blue;
+    width: 100%;
+}
+
+#footer {
+    border: 2px dashed burlywood;
+    width: 100%;
+    height: 20px;
 }

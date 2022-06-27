@@ -10,7 +10,10 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
   },
 
+
+
   module: {
+
     rules: [
       {
         test: /\.css$/i,
@@ -23,7 +26,8 @@ module.exports = {
         type: 'asset/resource',
 
       },
+
     ],
   },
-  
+
 };
