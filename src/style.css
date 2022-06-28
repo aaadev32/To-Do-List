@@ -50,8 +50,19 @@ body {
 }
 
 #content{
+    display: flex;
+    justify-content: center;
     border: 2px dotted blue;
     width: 100%;
+    overflow: scroll;
+    
+}
+
+#task-form{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 75%;
 }
 
 #footer {
