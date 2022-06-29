@@ -4,9 +4,17 @@ import home from './icons/menu.svg';
 let taskArray = [];
 
 const domMods = (() => {
+    const contentDiv = document.getElementById('content');
+
     function removeChildren(parent) {
         while (parent.firstChild) {
             parent.removeChild(parent.firstChild);
+        }
+    }
+
+    function clearContent(){
+        while(contentDiv.childNodes.length > 2){
+            contentDiv.removeChild(contentDiv.lastChild);
         }
     }
 
@@ -24,6 +32,7 @@ const domMods = (() => {
         document.getElementById(parent).appendChild(imgElement);
     }
 
+    /*
     const taskForm = () => {
         const contentDiv = document.getElementById('content');
 
@@ -53,10 +62,20 @@ const domMods = (() => {
 
     }
 
+    */
+
+    //this is what should display when the tasks tab is selected
     const taskList = () => {
 
+        clearContent();
+
+        createElementAppend('div', 'task-list', 'content');
+        createElementAppend('div', 'task-list', 'task-list');
+
+
+
     }
-    return { createElementAppend, ImgAppend, taskForm };
+    return { createElementAppend, ImgAppend, removeChildren, taskList };
 })();
 
 
@@ -87,6 +106,8 @@ const header = () => {
 }
 
 const sidebar = () => {
+    const contentDiv = document.getElementById('content');
+
     document.getElementById('sidebar').style.gridArea = 'sb';
     domMods.createElementAppend('div', 'home', 'sidebar');
     domMods.createElementAppend('div', 'tasks', 'sidebar');
@@ -96,7 +117,15 @@ const sidebar = () => {
     const sidebarTasks = document.getElementById('tasks');
     const sidebarProject = document.getElementById('project');
 
-    sidebarTasks.onclick = function () { domMods.taskForm(); }
+    sidebarTasks.onclick = function () {
+        domMods.taskList();
+    }
+
+    /*if (document.getElementById('task-form').style.display === 'flex') {
+        document.getElementById('task-form').style.display = 'none';
+    } else {
+        document.getElementById('task-form').style.display = 'flex';
+    }*/
 
     document.getElementById('home').textContent = 'Home'
     document.getElementById('tasks').textContent = 'Tasks';
@@ -104,10 +133,6 @@ const sidebar = () => {
 }
 
 const content = () => {
-    domMods.createElementAppend('div', 'stuff', 'content');
-    document.getElementById('stuff').textContent = 'content stuff';
-
-
 
 }
 
@@ -117,6 +142,4 @@ const footer = () => {
 }
 header(), sidebar(), content(), footer();
 
-//TODO 6/28/22 work on new task forms line 52 or something
-//the reason .textContent isnt working on the inputs is because it needs an assosiative label
-//which can then make use of .textContent
+//TODO 6/29/22 work on task list so that when it is selected show tasks and button to create new task

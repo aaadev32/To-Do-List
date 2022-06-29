@@ -59,12 +59,23 @@ body {
 }
 
 #task-form{
-    display: flex;
+    
+    display: none;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: center;
     width: 75%;
 }
 
+.form-inputs {
+    display: flex;
+    flex-direction: column;
+}
+
+#form-dates{
+    display: flex;
+    justify-content: space-around;
+    margin: 23px;
+}
 #footer {
     border: 2px dashed burlywood;
     width: 100%;
