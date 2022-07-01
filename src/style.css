@@ -1,7 +1,8 @@
-html{
+html {
     height: 100%;
     overflow: auto;
 }
+
 body {
     margin: 0;
     display: flex;
@@ -17,7 +18,7 @@ body {
     width: 100%;
     height: 50px;
     top: 0;
-    border-bottom:4px solid black;
+    border-bottom: 4px solid black;
 }
 
 #menu-icon {
@@ -27,7 +28,7 @@ body {
     margin: 6px;
 }
 
-#menu-icon :hover{
+#menu-icon :hover {
     background-color: grey;
 }
 
@@ -35,12 +36,12 @@ body {
     margin: auto;
 }
 
-#sidebar-content-container{
+#sidebar-content-container {
     display: flex;
     height: 100%;
 }
 
-#sidebar{
+#sidebar {
     display: flex;
     flex-direction: column;
     width: 30%;
@@ -49,21 +50,29 @@ body {
     border: 2px solid black;
 }
 
-#content{
+#content {
     display: flex;
     justify-content: center;
     border: 2px dotted blue;
     width: 100%;
     overflow: scroll;
-    
+
 }
 
-#task-form{
-    
+#task-form {
+
     display: none;
     flex-direction: column;
     justify-content: center;
     width: 75%;
+}
+
+.task-list-items {
+    display: flex;
+}
+
+.task-list-items > * {
+    border: 2px solid black;
 }
 
 .form-inputs {
@@ -71,11 +80,16 @@ body {
     flex-direction: column;
 }
 
-#form-dates{
+#form-dates {
     display: flex;
     justify-content: space-around;
     margin: 23px;
 }
+
+#date-input {
+    margin: 23px 0;
+}
+
 #footer {
     border: 2px dashed burlywood;
     width: 100%;
