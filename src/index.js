@@ -16,11 +16,11 @@ const arraysAndObjects = (() => {
 
         constructor(title, description, priority, notes, due) {
 
-            let taskTitle = this.title;
-            let taskDescription = this.description;
-            let taskPriority = this.priority;
-            let taskNotes = this.notes;
-            let taskDue = this.due;
+            this.title = title;
+            this.description = description;
+            this.priority = priority;
+            this.notes = notes;
+            this.due = due;
 
 
         }
@@ -28,9 +28,9 @@ const arraysAndObjects = (() => {
     }
 
 
+
     return { taskArray, task };
 })();
-
 
 const domMods = (() => {
     const contentDiv = document.getElementById('content');
@@ -53,7 +53,6 @@ const domMods = (() => {
         let temp = document.createElement(element);
         temp.id = ID;
         document.getElementById(parent).appendChild(temp);
-        console.log(temp);
     }
 
     const createIdClassElementAppend = (element, ID, parent, classN) => {
@@ -61,7 +60,6 @@ const domMods = (() => {
         temp.className = classN;
         temp.id = ID;
         document.getElementById(parent).appendChild(temp);
-        console.log(temp);
     }
 
     const ImgAppend = (ID, importedImage, parent) => {
@@ -77,17 +75,34 @@ const domMods = (() => {
     return { createElementAppend, createIdClassElementAppend, ImgAppend, removeChildren, clearContent };
 })();
 
+const clickFuncs = (() => {
+    const submitTask = () => {
+        const formTitle = document.getElementById('title').value;
+        const formDescription = document.getElementById('description').value;
+        const formPriority = document.getElementById('priority').value;
+        const formNotes = document.getElementById('notes').value;
+        const formDue = document.getElementById('due-date').value;
+
+        console.log(document.getElementById('due-date'))
+        const temp = new arraysAndObjects.task(formTitle, formDescription, formPriority, formNotes, formDue);
+        arraysAndObjects.taskArray.push(temp);
+        console.log(arraysAndObjects.taskArray);
+    }
+
+    return { submitTask }
+})();
+
+
+
 const taskList = () => {
 
     domMods.clearContent();
 
     domMods.createElementAppend('div', 'task-list', 'content');
-    domMods.createElementAppend('div', 'task-list', 'content');
     domMods.createElementAppend('button', 'new-task-button', 'task-list');
 
+    //builds task list from taskArray
     for (let i = 0; i < arraysAndObjects.taskArray.length; i++) {
-        //append the array objects and the associated values to these newly created elements
-
         domMods.createIdClassElementAppend('div', `task-${i}`, 'task-list', 'task-list-items');
 
         domMods.createIdClassElementAppend('div', `title-container-${i}`, `task-${i}`, 'title-list-div');
@@ -97,32 +112,38 @@ const taskList = () => {
         document.getElementById(`description-container-${i}`).textContent = arraysAndObjects.taskArray[i].description;
 
         domMods.createIdClassElementAppend('div', `priority-container-${i}`, `task-${i}`, 'priority-list-div')
-        document.getElementById(`priority-container-${i}`).textContent = arraysAndObjects.taskArray[i].title;
-
-        domMods.createIdClassElementAppend('div', `due-date-container-${i}`, `task-${i}`, 'due-date-list-div')
-        document.getElementById(`due-date-container-${i}`).textContent = arraysAndObjects.taskArray[i].title;
+        document.getElementById(`priority-container-${i}`).textContent = arraysAndObjects.taskArray[i].priority;
 
         domMods.createIdClassElementAppend('div', `notes-container-${i}`, `task-${i}`, 'notes-list-div')
-        document.getElementById(`notes-container-${i}`).textContent = arraysAndObjects.taskArray[i].title;
+        document.getElementById(`notes-container-${i}`).textContent = arraysAndObjects.taskArray[i].notes;
+
+        domMods.createIdClassElementAppend('div', `due-date-container-${i}`, `task-${i}`, 'due-date-list-div')
+        document.getElementById(`due-date-container-${i}`).textContent = arraysAndObjects.taskArray[i].due;
+
 
     }
 
 
-
+    //opens new task form
     document.getElementById('new-task-button').onclick = function () {
         domMods.clearContent();
-
         document.getElementById('task-form').style.display = 'flex';
     }
 
+    //submits form data to class constructor and pushes to taskArray
     document.getElementById('form-submit-button').onclick = function () {
-        let temp = new arraysAndObjects.task(formTitle, formDescription, formPriority, formNotes, formDue);
-        arraysAndObjects.taskArray.push(temp);
-    }
+        clickFuncs.submitTask();
+        //append submitted task thats why it isnt persistent
+        domMods.clearContent();
+        taskList();
+        return false;
+    } // all elements in my task list get deleted when this line is reached!!! 
 
-
+    console.log(arraysAndObjects.taskArray);
 
     document.getElementById('new-task-button').textContent = 'New task';
+
+    return 1;
 
 }
 
@@ -173,4 +194,4 @@ const footer = () => {
 }
 header(), sidebar(), content(), footer();
 
-//TODO 6/30/22 line 69
+//6/31/22 fix line 119 so the form submits each input field to its associative task constructor parameter and creates the new object
