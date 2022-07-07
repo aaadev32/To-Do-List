@@ -1,8 +1,12 @@
 import './style.css';
 import home from './icons/menu.svg';
+import plus from './icons/plus.png';
 
 
 const arraysAndObjects = (() => {
+
+
+
     let testObj = {
         title: 'title test',
         description: 'description test',
@@ -10,7 +14,12 @@ const arraysAndObjects = (() => {
         notes: 'notes test',
         dueDate: 'due date test',
     }
-    let taskArray = [testObj];
+
+    let defaultProject = [testObj];
+
+    let currentProject = defaultProject;
+
+    let projectArray = [defaultProject]
 
     class task {
 
@@ -27,9 +36,13 @@ const arraysAndObjects = (() => {
 
     }
 
+    const newArray = (name) => {
+        name = [];
+        return name;
+    }
 
 
-    return { taskArray, task };
+    return { task, defaultProject, newArray, currentProject, projectArray };
 })();
 
 const domMods = (() => {
@@ -76,6 +89,7 @@ const domMods = (() => {
 })();
 
 const clickFuncs = (() => {
+
     const submitTask = () => {
         const formTitle = document.getElementById('title').value;
         const formDescription = document.getElementById('description').value;
@@ -83,71 +97,78 @@ const clickFuncs = (() => {
         const formNotes = document.getElementById('notes').value;
         const formDue = document.getElementById('due-date').value;
 
-        console.log(document.getElementById('due-date'))
         const temp = new arraysAndObjects.task(formTitle, formDescription, formPriority, formNotes, formDue);
-        arraysAndObjects.taskArray.push(temp);
-        console.log(arraysAndObjects.taskArray);
+        arraysAndObjects.currentProject.push(temp);
     }
 
-    return { submitTask }
+    const projects = () => {
+        let i = arraysAndObjects.projectArray.length;
+
+        domMods.clearContent();
+        domMods.createElementAppend('div', 'project-container', 'content');
+        domMods.createElementAppend('div', 'add-project-button', 'project-container');
+        //add + symbol .svg 
+        domMods.ImgAppend('plus-symbol', plus, 'add-project-button');
+        document.getElementById('add-project-button').onclick = function () {
+
+            if (document.getElementById(`project-${i}`) == null) {
+                domMods.createIdClassElementAppend('div', `project-${i}`, 'project-container', 'project-list');
+            }
+
+        }
+    }
+
+    const taskList = () => {
+
+        domMods.clearContent();
+
+        domMods.createElementAppend('div', 'task-list', 'content');
+        domMods.createElementAppend('button', 'new-task-button', 'task-list');
+
+        //builds task list from taskArray
+        for (let i = 0; i < arraysAndObjects.currentProject.length; i++) {
+            domMods.createIdClassElementAppend('div', `task-${i}`, 'task-list', 'task-list-items');
+
+            domMods.createIdClassElementAppend('div', `title-container-${i}`, `task-${i}`, 'title-list-div');
+            document.getElementById(`title-container-${i}`).textContent = arraysAndObjects.currentProject[i].title;
+
+            domMods.createIdClassElementAppend('div', `description-container-${i}`, `task-${i}`, 'description-list-div')
+            document.getElementById(`description-container-${i}`).textContent = arraysAndObjects.currentProject[i].description;
+
+            domMods.createIdClassElementAppend('div', `priority-container-${i}`, `task-${i}`, 'priority-list-div')
+            document.getElementById(`priority-container-${i}`).textContent = arraysAndObjects.currentProject[i].priority;
+
+            domMods.createIdClassElementAppend('div', `notes-container-${i}`, `task-${i}`, 'notes-list-div')
+            document.getElementById(`notes-container-${i}`).textContent = arraysAndObjects.currentProject[i].notes;
+
+            domMods.createIdClassElementAppend('div', `due-date-container-${i}`, `task-${i}`, 'due-date-list-div')
+            document.getElementById(`due-date-container-${i}`).textContent = arraysAndObjects.currentProject[i].due;
+
+        }
+
+
+        //opens new task form
+        document.getElementById('new-task-button').onclick = function () {
+            domMods.clearContent();
+            document.getElementById('task-form').style.display = 'flex';
+        }
+
+        //submits form data to class constructor and pushes object to taskArray
+        document.getElementById('form-submit-button').onclick = function () {
+            clickFuncs.submitTask();
+            domMods.clearContent();
+            clickFuncs.taskList();
+            return false; // for some reason if you dont return false all elements get deleted once the function completes!!!
+        }
+
+        document.getElementById('new-task-button').textContent = 'New task';
+
+        return 1;
+
+    }
+
+    return { submitTask, taskList, projects }
 })();
-
-
-
-const taskList = () => {
-
-    domMods.clearContent();
-
-    domMods.createElementAppend('div', 'task-list', 'content');
-    domMods.createElementAppend('button', 'new-task-button', 'task-list');
-
-    //builds task list from taskArray
-    for (let i = 0; i < arraysAndObjects.taskArray.length; i++) {
-        domMods.createIdClassElementAppend('div', `task-${i}`, 'task-list', 'task-list-items');
-
-        domMods.createIdClassElementAppend('div', `title-container-${i}`, `task-${i}`, 'title-list-div');
-        document.getElementById(`title-container-${i}`).textContent = arraysAndObjects.taskArray[i].title;
-
-        domMods.createIdClassElementAppend('div', `description-container-${i}`, `task-${i}`, 'description-list-div')
-        document.getElementById(`description-container-${i}`).textContent = arraysAndObjects.taskArray[i].description;
-
-        domMods.createIdClassElementAppend('div', `priority-container-${i}`, `task-${i}`, 'priority-list-div')
-        document.getElementById(`priority-container-${i}`).textContent = arraysAndObjects.taskArray[i].priority;
-
-        domMods.createIdClassElementAppend('div', `notes-container-${i}`, `task-${i}`, 'notes-list-div')
-        document.getElementById(`notes-container-${i}`).textContent = arraysAndObjects.taskArray[i].notes;
-
-        domMods.createIdClassElementAppend('div', `due-date-container-${i}`, `task-${i}`, 'due-date-list-div')
-        document.getElementById(`due-date-container-${i}`).textContent = arraysAndObjects.taskArray[i].due;
-
-
-    }
-
-
-    //opens new task form
-    document.getElementById('new-task-button').onclick = function () {
-        domMods.clearContent();
-        document.getElementById('task-form').style.display = 'flex';
-    }
-
-    //submits form data to class constructor and pushes to taskArray
-    document.getElementById('form-submit-button').onclick = function () {
-        clickFuncs.submitTask();
-        //append submitted task thats why it isnt persistent
-        domMods.clearContent();
-        taskList();
-        return false;
-    } // all elements in my task list get deleted when this line is reached!!! 
-
-    console.log(arraysAndObjects.taskArray);
-
-    document.getElementById('new-task-button').textContent = 'New task';
-
-    return 1;
-
-}
-
-
 
 const header = () => {
     document.getElementById('header').style.gridArea = 'hd';
@@ -164,24 +185,29 @@ const sidebar = () => {
     const contentDiv = document.getElementById('content');
 
     document.getElementById('sidebar').style.gridArea = 'sb';
-    domMods.createElementAppend('div', 'home', 'sidebar');
-    domMods.createElementAppend('div', 'tasks', 'sidebar');
-    domMods.createElementAppend('div', 'project', 'sidebar');
+    domMods.createElementAppend('div', 'home-tab', 'sidebar');
+    domMods.createElementAppend('div', 'tasks-tab', 'sidebar');
+    domMods.createElementAppend('div', 'project-tab', 'sidebar');
 
-    const sidebarHome = document.getElementById('home');
-    const sidebarTasks = document.getElementById('tasks');
-    const sidebarProject = document.getElementById('project');
+    const sidebarHome = document.getElementById('home-tab');
+    const sidebarTasks = document.getElementById('tasks-tab');
+    const sidebarProject = document.getElementById('project-tab');
 
 
 
     sidebarTasks.onclick = function () {
         domMods.clearContent();
-        taskList();
+        clickFuncs.taskList();
     }
 
-    document.getElementById('home').textContent = 'Home';
-    document.getElementById('tasks').textContent = 'Tasks';
-    document.getElementById('project').textContent = 'Projects';
+    sidebarProject.onclick = function () {
+        domMods.clearContent();
+        clickFuncs.projects();
+    }
+
+    document.getElementById('home-tab').textContent = 'Home';
+    document.getElementById('tasks-tab').textContent = 'Tasks';
+    document.getElementById('project-tab').textContent = 'Projects';
 }
 
 const content = () => {
@@ -194,4 +220,4 @@ const footer = () => {
 }
 header(), sidebar(), content(), footer();
 
-//6/31/22 fix line 119 so the form submits each input field to its associative task constructor parameter and creates the new object
+//make another form for the projects asking for a title, notes, and due date 7/7/22
