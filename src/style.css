@@ -68,11 +68,19 @@ body {
     width: 75%;
 }
 
+#project-form {
+
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    width: 75%;
+}
+
 .task-list-items {
     display: flex;
 }
 
-.task-list-items > * {
+.task-list-items>* {
     border: 2px solid black;
 }
 

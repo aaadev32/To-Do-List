@@ -15,11 +15,17 @@ const arraysAndObjects = (() => {
         dueDate: 'due date test',
     }
 
+    let projectTest = {
+        title: 'title',
+        notes: 'notes',
+        due: 'due date',
+    }
+
     let defaultProject = [testObj];
 
     let currentProject = defaultProject;
 
-    let projectArray = [defaultProject]
+    let projectArray = [projectTest]
 
     class task {
 
@@ -36,13 +42,22 @@ const arraysAndObjects = (() => {
 
     }
 
+    class project {
+        constructor(title, notes, due) {
+
+            this.title = title;
+            this.notes = notes;
+            this.due = due;
+        }
+    }
+
     const newArray = (name) => {
         name = [];
         return name;
     }
 
 
-    return { task, defaultProject, newArray, currentProject, projectArray };
+    return { task, project, defaultProject, newArray, currentProject, projectArray };
 })();
 
 const domMods = (() => {
@@ -57,7 +72,8 @@ const domMods = (() => {
     function clearContent() {
 
         document.getElementById('task-form').style.display = 'none';
-        while (contentDiv.childNodes.length > 2) {
+        document.getElementById('project-form').style.display = 'none';
+        while (contentDiv.childNodes.length > 4) {
             contentDiv.removeChild(contentDiv.lastChild);
         }
     }
@@ -88,7 +104,7 @@ const domMods = (() => {
     return { createElementAppend, createIdClassElementAppend, ImgAppend, removeChildren, clearContent };
 })();
 
-const clickFuncs = (() => {
+const projectsTasks = (() => {
 
     const submitTask = () => {
         const formTitle = document.getElementById('title').value;
@@ -99,22 +115,54 @@ const clickFuncs = (() => {
 
         const temp = new arraysAndObjects.task(formTitle, formDescription, formPriority, formNotes, formDue);
         arraysAndObjects.currentProject.push(temp);
+        console.log(arraysAndObjects.currentProject);
+    }
+
+    const submitProject = () => {
+        const projectTitle = document.getElementById("project-title").value;
+        const projectNotes = document.getElementById("project-notes").value;
+        const projectDueDate = document.getElementById("project-due-date").value;
+
+        let temp = new arraysAndObjects.project(projectTitle, projectNotes, projectDueDate)
+        arraysAndObjects.projectArray.push(temp);
+        console.log('submitted')
+        console.log(arraysAndObjects.projectArray)
+
     }
 
     const projects = () => {
         let i = arraysAndObjects.projectArray.length;
 
+
+
         domMods.clearContent();
         domMods.createElementAppend('div', 'project-container', 'content');
-        domMods.createElementAppend('div', 'add-project-button', 'project-container');
-        //add + symbol .svg 
+        domMods.createElementAppend('button', 'add-project-button', 'project-container');
         domMods.ImgAppend('plus-symbol', plus, 'add-project-button');
+
         document.getElementById('add-project-button').onclick = function () {
 
-            if (document.getElementById(`project-${i}`) == null) {
-                domMods.createIdClassElementAppend('div', `project-${i}`, 'project-container', 'project-list');
+
+
+            document.getElementById('project-form').style.display = 'flex';
+
+            for (i = 0; i < arraysAndObjects.projectArray.length; i++) {
+                const newTitle = domMods.createElementAppend('div', `project-title-${i}`)
+                const newNotes = domMods.createElementAppend('div', `project-notes-${i}`)
+                const newDue = domMods.createElementAppend('div', `project-due-${i}`)
+
+                if (document.getElementById(`project-${i}`) == null) {
+                    domMods.createIdClassElementAppend('div', `project-${i}`, 'project-container', 'project-list');
+                    //create projects list from the projects array here
+                }
             }
 
+        }
+
+        document.getElementById('project-submit-button').onclick = function () {
+            submitProject();
+
+            return false; //keeps page from being refreshed
         }
     }
 
@@ -155,9 +203,9 @@ const clickFuncs = (() => {
 
         //submits form data to class constructor and pushes object to taskArray
         document.getElementById('form-submit-button').onclick = function () {
-            clickFuncs.submitTask();
+            projectsTasks.submitTask();
             domMods.clearContent();
-            clickFuncs.taskList();
+            projectsTasks.taskList();
             return false; // for some reason if you dont return false all elements get deleted once the function completes!!!
         }
 
@@ -167,7 +215,7 @@ const clickFuncs = (() => {
 
     }
 
-    return { submitTask, taskList, projects }
+    return { submitTask, taskList, projects, submitProject }
 })();
 
 const header = () => {
@@ -197,12 +245,12 @@ const sidebar = () => {
 
     sidebarTasks.onclick = function () {
         domMods.clearContent();
-        clickFuncs.taskList();
+        projectsTasks.taskList();
     }
 
     sidebarProject.onclick = function () {
         domMods.clearContent();
-        clickFuncs.projects();
+        projectsTasks.projects();
     }
 
     document.getElementById('home-tab').textContent = 'Home';
@@ -218,6 +266,9 @@ const footer = () => {
     domMods.createElementAppend('div', 'footer-stuff', 'footer')
     document.getElementById('footer-stuff').textContent = 'footer stuff'
 }
+
 header(), sidebar(), content(), footer();
 
-//make another form for the projects asking for a title, notes, and due date 7/7/22
+//finish making the project list populate line 155 or something 7/8/22
+
+//forgot to add delete button to task list
