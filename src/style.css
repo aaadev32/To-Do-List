@@ -76,15 +76,23 @@ body {
     width: 75%;
 }
 
-#project-container{
+#project-container {
     display: flex;
     flex-direction: column;
 }
 
-#project-button-container{
+#project-button-container {
     display: flex;
     flex-direction: row-reverse;
     align-items: center;
+}
+
+.project-list {
+    display: flex;
+}
+
+.project-list>* {
+    border: 2px solid black;
 }
 
 .task-list-items {

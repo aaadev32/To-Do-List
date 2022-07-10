@@ -21,11 +21,12 @@ const arraysAndObjects = (() => {
         due: 'due date',
     }
 
+    //task objects are pushed to defaultProject until a new one is created and selected
     let defaultProject = [testObj];
-
+    //used to keep track of users selected project
     let currentProject = defaultProject;
-
-    let projectArray = [projectTest]
+    //contains all project object
+    let projectArray = []
 
     class task {
 
@@ -97,9 +98,6 @@ const domMods = (() => {
         imgElement.src = importedImage;
         document.getElementById(parent).appendChild(imgElement);
     }
-
-    //this is what should display when the tasks tab is selected
-
 
     return { createElementAppend, createIdClassElementAppend, ImgAppend, removeChildren, clearContent };
 })();
@@ -284,6 +282,8 @@ const footer = () => {
 
 header(), sidebar(), content(), footer();
 
-//finish making the project list populate line 155 or something 7/8/22
+//TODO make use of createArray function or whatever to save tasks to projects
 
-//forgot to add delete button to task list
+//TODO make a text stating the currently selected project when in the tasks tab
+
+//TODO create a delete button for tasks and projects
