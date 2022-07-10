@@ -76,6 +76,17 @@ body {
     width: 75%;
 }
 
+#project-container{
+    display: flex;
+    flex-direction: column;
+}
+
+#project-button-container{
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+}
+
 .task-list-items {
     display: flex;
 }

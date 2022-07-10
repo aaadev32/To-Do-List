@@ -128,47 +128,63 @@ const projectsTasks = (() => {
         console.log('submitted')
         console.log(arraysAndObjects.projectArray)
 
+        document.getElementById('project-form').style.display = 'none';
     }
 
     const projects = () => {
-        let i = arraysAndObjects.projectArray.length;
-
-
+        let projectListClass = document.getElementsByClassName('project-list');
 
         domMods.clearContent();
+        console.log(document.getElementById('content'));
         domMods.createElementAppend('div', 'project-container', 'content');
-        domMods.createElementAppend('button', 'add-project-button', 'project-container');
+        domMods.createElementAppend('div', 'project-button-container', 'project-container');
+        document.getElementById('project-button-container').textContent = 'New Project';
+        domMods.createElementAppend('button', 'add-project-button', 'project-button-container');
         domMods.ImgAppend('plus-symbol', plus, 'add-project-button');
+
+
+        projectList();
 
         document.getElementById('add-project-button').onclick = function () {
 
-
-
             document.getElementById('project-form').style.display = 'flex';
-
-            for (i = 0; i < arraysAndObjects.projectArray.length; i++) {
-                const newTitle = domMods.createElementAppend('div', `project-title-${i}`)
-                const newNotes = domMods.createElementAppend('div', `project-notes-${i}`)
-                const newDue = domMods.createElementAppend('div', `project-due-${i}`)
-
-                if (document.getElementById(`project-${i}`) == null) {
-                    domMods.createIdClassElementAppend('div', `project-${i}`, 'project-container', 'project-list');
-                    //create projects list from the projects array here
-                }
-            }
+            document.getElementById('project-button-container').style.display = 'none';
+            Array.from(projectListClass).forEach(div => {
+                div.style.display = 'none';
+            });
 
         }
 
         document.getElementById('project-submit-button').onclick = function () {
-            submitProject();
 
-            return false; //keeps page from being refreshed
+            submitProject();
+            projectList();
+
+            document.getElementById('project-button-container').style.display = 'flex';
+            Array.from(projectListClass).forEach(div => {
+                div.style.display = 'flex';
+            });
+
+        }
+    }
+
+    const projectList = () => {
+        for (let i = 0; i < arraysAndObjects.projectArray.length; i++) {
+            domMods.createIdClassElementAppend('div', `project-list-${i}`, 'project-container', 'project-list');
+            let newTitle = domMods.createIdClassElementAppend('div', `project-title-${i}`, `project-list-${i}`, 'project-list-items');
+            let newNotes = domMods.createIdClassElementAppend('div', `project-notes-${i}`, `project-list-${i}`, 'project-list-items');
+            let newDue = domMods.createIdClassElementAppend('div', `project-due-${i}`, `project-list-${i}`, 'project-list-items');
+
+            document.getElementById(`project-title-${i}`).textContent = arraysAndObjects.projectArray[i].title;
+            document.getElementById(`project-notes-${i}`).textContent = arraysAndObjects.projectArray[i].notes;
+            document.getElementById(`project-due-${i}`).textContent = arraysAndObjects.projectArray[i].due;
         }
     }
 
     const taskList = () => {
 
         domMods.clearContent();
+        console.log(document.getElementById('content'));
 
         domMods.createElementAppend('div', 'task-list', 'content');
         domMods.createElementAppend('button', 'new-task-button', 'task-list');
@@ -206,7 +222,6 @@ const projectsTasks = (() => {
             projectsTasks.submitTask();
             domMods.clearContent();
             projectsTasks.taskList();
-            return false; // for some reason if you dont return false all elements get deleted once the function completes!!!
         }
 
         document.getElementById('new-task-button').textContent = 'New task';
@@ -215,7 +230,7 @@ const projectsTasks = (() => {
 
     }
 
-    return { submitTask, taskList, projects, submitProject }
+    return { submitTask, taskList, projectList, projects, submitProject }
 })();
 
 const header = () => {
