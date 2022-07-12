@@ -87,11 +87,18 @@ body {
     align-items: center;
 }
 
-.project-list {
-    display: flex;
+
+
+#show-tasks-png {
+    height: 16px;
+    width: 16px;
 }
 
-.project-list>* {
+.project-lists {
+    display: flex;
+    align-items: center;}
+
+.project-lists>* {
     border: 2px solid black;
 }
 

@@ -1,6 +1,7 @@
 import './style.css';
 import home from './icons/menu.svg';
 import plus from './icons/plus.png';
+import showTasks from './icons/show_tasks.png';
 
 
 const arraysAndObjects = (() => {
@@ -99,7 +100,14 @@ const domMods = (() => {
         document.getElementById(parent).appendChild(imgElement);
     }
 
-    return { createElementAppend, createIdClassElementAppend, ImgAppend, removeChildren, clearContent };
+    const ImgIdClassAppend = (id, Class, importedImage, parent) => {
+        let imgElement = document.createElement('img');
+        imgElement.className = Class;
+        imgElement.id = id;
+        imgElement.src = importedImage;
+        document.getElementById(parent).appendChild(imgElement);
+    }
+    return { createElementAppend, createIdClassElementAppend, ImgAppend, ImgIdClassAppend, removeChildren, clearContent };
 })();
 
 const projectsTasks = (() => {
@@ -117,12 +125,13 @@ const projectsTasks = (() => {
     }
 
     const submitProject = () => {
-        const projectTitle = document.getElementById("project-title").value;
-        const projectNotes = document.getElementById("project-notes").value;
-        const projectDueDate = document.getElementById("project-due-date").value;
+        let i = arraysAndObjects.currentProject.length;
+        const projectTitle = document.getElementById(`project-title`).value;
+        const projectNotes = document.getElementById(`project-notes`).value;
+        const projectDueDate = document.getElementById(`project-due-date`).value;
 
-        let temp = new arraysAndObjects.project(projectTitle, projectNotes, projectDueDate)
-        arraysAndObjects.projectArray.push(temp);
+        let newProject = new arraysAndObjects.project(projectTitle, projectNotes, projectDueDate)
+        arraysAndObjects.projectArray.push(newProject);
         console.log('submitted')
         console.log(arraysAndObjects.projectArray)
 
@@ -130,13 +139,17 @@ const projectsTasks = (() => {
     }
 
     const projects = () => {
-        let projectListClass = document.getElementsByClassName('project-list');
+        let projectListClass = document.getElementsByClassName('project-list-items');
 
         domMods.clearContent();
         console.log(document.getElementById('content'));
+
         domMods.createElementAppend('div', 'project-container', 'content');
+        domMods.createElementAppend('div', 'project-list-container', 'project-container');
         domMods.createElementAppend('div', 'project-button-container', 'project-container');
+
         document.getElementById('project-button-container').textContent = 'New Project';
+
         domMods.createElementAppend('button', 'add-project-button', 'project-button-container');
         domMods.ImgAppend('plus-symbol', plus, 'add-project-button');
 
@@ -167,15 +180,22 @@ const projectsTasks = (() => {
     }
 
     const projectList = () => {
+        domMods.removeChildren(document.getElementById('project-list-container'));
         for (let i = 0; i < arraysAndObjects.projectArray.length; i++) {
-            domMods.createIdClassElementAppend('div', `project-list-${i}`, 'project-container', 'project-list');
-            let newTitle = domMods.createIdClassElementAppend('div', `project-title-${i}`, `project-list-${i}`, 'project-list-items');
-            let newNotes = domMods.createIdClassElementAppend('div', `project-notes-${i}`, `project-list-${i}`, 'project-list-items');
-            let newDue = domMods.createIdClassElementAppend('div', `project-due-${i}`, `project-list-${i}`, 'project-list-items');
+
+            domMods.createIdClassElementAppend('div', `project-list-${i}`, 'project-list-container', 'project-lists');
+            domMods.ImgIdClassAppend(`expand-tasks`,'project-list-items', showTasks, `project-list-${i}`);
+            domMods.createIdClassElementAppend('div', `project-title-${i}`, `project-list-${i}`, 'project-list-items');
+            domMods.createIdClassElementAppend('div', `project-notes-${i}`, `project-list-${i}`, 'project-list-items');
+            domMods.createIdClassElementAppend('div', `project-due-${i}`, `project-list-${i}`, 'project-list-items');
 
             document.getElementById(`project-title-${i}`).textContent = arraysAndObjects.projectArray[i].title;
             document.getElementById(`project-notes-${i}`).textContent = arraysAndObjects.projectArray[i].notes;
             document.getElementById(`project-due-${i}`).textContent = arraysAndObjects.projectArray[i].due;
+
+            document.getElementById('expand-tasks').onclick = function () {
+                expandProjectTasks();
+            }
         }
     }
 
@@ -226,6 +246,11 @@ const projectsTasks = (() => {
 
         return 1;
 
+    }
+
+    const expandProjectTasks = () => {
+        console.log('exPAANDINGGG')
+        return 1;
     }
 
     return { submitTask, taskList, projectList, projects, submitProject }
@@ -282,7 +307,7 @@ const footer = () => {
 
 header(), sidebar(), content(), footer();
 
-//TODO make use of createArray function or whatever to save tasks to projects
+//TODO work on expandProjectTasks function line 250ish 7/11/22
 
 //TODO make a text stating the currently selected project when in the tasks tab
 
