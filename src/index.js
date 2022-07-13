@@ -21,13 +21,14 @@ const arraysAndObjects = (() => {
         notes: 'notes',
         due: 'due date',
     }
-
+    //keeps track of selected list in expandProjectTasks
+    let selectedProject = null;
     //task objects are pushed to defaultProject until a new one is created and selected
     let defaultProject = [testObj];
     //used to keep track of users selected project
     let currentProject = defaultProject;
     //contains all project object
-    let projectArray = []
+    let projectArray = [];
 
     class task {
 
@@ -59,7 +60,7 @@ const arraysAndObjects = (() => {
     }
 
 
-    return { task, project, defaultProject, newArray, currentProject, projectArray };
+    return { task, project, defaultProject, newArray, currentProject, projectArray, selectedProject };
 })();
 
 const domMods = (() => {
@@ -79,7 +80,13 @@ const domMods = (() => {
             contentDiv.removeChild(contentDiv.lastChild);
         }
     }
-
+    const createElementIdClassDataAppend = (element, ID, classN, data, parent) => {
+        let temp = document.createElement(element);
+        temp.id = ID;
+        temp.className = classN;
+        temp.data = data;
+        document.getElementById(parent).appendChild(temp);
+    }
     const createElementAppend = (element, ID, parent) => {
         let temp = document.createElement(element);
         temp.id = ID;
@@ -107,7 +114,7 @@ const domMods = (() => {
         imgElement.src = importedImage;
         document.getElementById(parent).appendChild(imgElement);
     }
-    return { createElementAppend, createIdClassElementAppend, ImgAppend, ImgIdClassAppend, removeChildren, clearContent };
+    return { createElementIdClassDataAppend, createElementAppend, createIdClassElementAppend, ImgAppend, ImgIdClassAppend, removeChildren, clearContent };
 })();
 
 const projectsTasks = (() => {
@@ -180,11 +187,14 @@ const projectsTasks = (() => {
     }
 
     const projectList = () => {
+
         domMods.removeChildren(document.getElementById('project-list-container'));
+
+        //creates all saved projects and their associated tasks
         for (let i = 0; i < arraysAndObjects.projectArray.length; i++) {
 
             domMods.createIdClassElementAppend('div', `project-list-${i}`, 'project-list-container', 'project-lists');
-            domMods.ImgIdClassAppend(`expand-tasks`,'project-list-items', showTasks, `project-list-${i}`);
+            domMods.ImgIdClassAppend(`expand-tasks-${i}`, 'project-list-items', showTasks, `project-list-${i}`);
             domMods.createIdClassElementAppend('div', `project-title-${i}`, `project-list-${i}`, 'project-list-items');
             domMods.createIdClassElementAppend('div', `project-notes-${i}`, `project-list-${i}`, 'project-list-items');
             domMods.createIdClassElementAppend('div', `project-due-${i}`, `project-list-${i}`, 'project-list-items');
@@ -193,9 +203,33 @@ const projectsTasks = (() => {
             document.getElementById(`project-notes-${i}`).textContent = arraysAndObjects.projectArray[i].notes;
             document.getElementById(`project-due-${i}`).textContent = arraysAndObjects.projectArray[i].due;
 
-            document.getElementById('expand-tasks').onclick = function () {
+            document.getElementById(`expand-tasks-${i}`).onclick = function () {
+                //store num not updating when a new list selection is made (i think: test 7/13/22)
+                let storeNum = i;
+                arraysAndObjects.selectedProject = storeNum; 
+                console.log(arraysAndObjects.selectedProject);
                 expandProjectTasks();
             }
+        }
+
+        //when a project is selected the associated tasks will be appended here
+        domMods.createElementAppend('div','selected-project-container', 'project-list-container');
+    }
+
+    const expandProjectTasks = () => {
+        //projectArr[i][j];
+        // try creating a nested array where 'i' is the projects and 'j' is the task objects associated with their 'i' index projects
+        let selectedProject = arraysAndObjects.selectedProject;
+        console.log(`${selectedProject} + 'project selection'`)
+        for (let i = 0; i < arraysAndObjects.projectArray.length; i++) {
+            document.getElementById(`expand-tasks-${i}`).onclick =
+                function () {
+                    domMods.createElementAppend('div', `project-task-expansion-${i}`, `selected-project-container`)
+                    console.log('expanding tasks')
+                    arraysAndObjects.projectArray[i]
+                };
+
+
         }
     }
 
@@ -248,11 +282,6 @@ const projectsTasks = (() => {
 
     }
 
-    const expandProjectTasks = () => {
-        console.log('exPAANDINGGG')
-        return 1;
-    }
-
     return { submitTask, taskList, projectList, projects, submitProject }
 })();
 
@@ -289,6 +318,7 @@ const sidebar = () => {
     sidebarProject.onclick = function () {
         domMods.clearContent();
         projectsTasks.projects();
+        projectsTasks.projectList();
     }
 
     document.getElementById('home-tab').textContent = 'Home';
@@ -307,7 +337,7 @@ const footer = () => {
 
 header(), sidebar(), content(), footer();
 
-//TODO work on expandProjectTasks function line 250ish 7/11/22
+//TODO make selected-project-container work when making another project selection after a previous one has already been made 7/13/22
 
 //TODO make a text stating the currently selected project when in the tasks tab
 
