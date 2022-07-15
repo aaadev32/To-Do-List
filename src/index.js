@@ -2,6 +2,7 @@ import './style.css';
 import home from './icons/menu.svg';
 import plus from './icons/plus.png';
 import showTasks from './icons/show_tasks.png';
+import { test } from 'timespan';
 
 
 const arraysAndObjects = (() => {
@@ -22,7 +23,7 @@ const arraysAndObjects = (() => {
         due: 'due date',
     }
     //contains all project object
-    let taskArray = [];
+    let taskArray = [testObj];
     let projectArray = [];
     let selectedProjectNum = null;
 
@@ -118,9 +119,7 @@ const projectsTasks = (() => {
     const taskList = () => {
 
         domMods.clearContent();
-        console.log(document.getElementById('content'));
-
-        domMods.createElementAppend('div', 'task-list', 'content');
+        domMods.createElementAppend('div', 'task-list', 'selected-project-container');
         domMods.createElementAppend('button', 'new-task-button', 'task-list');
 
         //builds task list from taskArray
@@ -180,6 +179,8 @@ const projectsTasks = (() => {
     const projectList = () => {
 
         domMods.removeChildren(document.getElementById('project-list-container'));
+        domMods.createElementAppend('div', 'selected-project-container', 'project-list-container');
+
 
         //creates all saved projects and their associated tasks
         for (let i = 0; i < arraysAndObjects.projectArray.length; i++) {
@@ -198,15 +199,39 @@ const projectsTasks = (() => {
             document.getElementById(`expand-tasks-${i}`).onclick = function () {
                 //store num not updating when a new list selection is made (i think: test 7/13/22)
                 arraysAndObjects.selectedProjectNum = i;
-                console.log(arraysAndObjects.projectArray);
-                expandProjectTasks();
+                console.log(arraysAndObjects.selectedProjectNum);
+                let selectedProjectIndex = arraysAndObjects.selectedProjectNum
+                domMods.removeChildren(document.getElementById('selected-project-container'));
+                let projectArray = arraysAndObjects.projectArray;
+
+                for (let i = 0; i < arraysAndObjects.taskArray.length; i++) {
+
+
+                    document.getElementById(`expand-tasks-${i}`).onclick =
+
+                        domMods.createElementAppend('div', `project-task-expansion-${i}`, `selected-project-container`);
+                    const taskTitles = domMods.createElementAppend('div', `project-expansion-title-${i}`, `selected-project-container`);
+                    const taskDescription = domMods.createElementAppend('div', `project-expansion-description-${i}`, `selected-project-container`);
+                    const taskNotes = domMods.createElementAppend('div', `project-expansion-notes-${i}`, `selected-project-container`);
+                    const taskPriority = domMods.createElementAppend('div', `project-expansion-priority-${i}`, `selected-project-container`);
+                    const taskDueDates = domMods.createElementAppend('div', `project-expansion-due-${i}`, `selected-project-container`);
+                    // projectsTasks.taskList(); make this function parameter acess the associated taskArray index
+
+                    console.log('expansion!');
+                    console.log('expanding tasks');
+
+                    document.getElementById(`project-expansion-title-${i}`).value = arraysAndObjects.taskArray[i].title;
+                    document.getElementById(`project-expansion-description-${i}`).value = arraysAndObjects.taskArray[i].description;
+                    document.getElementById(`project-expansion-notes-${i}`).value = arraysAndObjects.taskArray[i].notes;
+                    document.getElementById(`project-expansion-priority-${i}`).value = arraysAndObjects.taskArray[i].priority;
+                    document.getElementById(`project-expansion-due-${i}`).value = arraysAndObjects.taskArray[i].due;
+
+                }
                 //projectList must be invoked each click or storeNum will not be updated
-                projectList();
             }
         }
 
         //when a project is selected the associated tasks will be appended here
-        domMods.createElementAppend('div', 'selected-project-container', 'project-list-container');
     }
 
     const submitProject = () => {
@@ -267,32 +292,7 @@ const projectsTasks = (() => {
     const expandProjectTasks = () => {
         //projectArr[i][j];
         // try creating a nested array where 'i' is the projects and 'j' is the task objects associated with their 'i' index projects
-        domMods.removeChildren(document.getElementById('selected-project-container'));
-        let projectArray = arraysAndObjects.projectArray;
 
-
-        console.log(`${projectArray} + 'project selection'`)
-
-        for (let i = 0; i < arraysAndObjects.projectArray.length; i++) {
-
-
-            document.getElementById(`expand-tasks-${i}`).onclick =
-                function () {
-                    const taskTitles = domMods.createElementAppend('div', `project-expansion-title-${i}`, `selected-project-container`);
-                    const taskNotes = domMods.createElementAppend('div', `project-expansion-notes-${i}`, `selected-project-container`);
-                    const taskDueDates = domMods.createElementAppend('div', `project-expansion-due-${i}`, `selected-project-container`);
-
-                    console.log('expansion!')
-
-                    domMods.createElementAppend('div', `project-task-expansion-${i}`, `selected-project-container`)
-                    console.log('expanding tasks')
-                    taskTitles.value = arraysAndObjects.projectArray[i].title;
-                    taskNotes.value = arraysAndObjects.projectArray[i].notes;
-                    taskDueDates.value = arraysAndObjects.projectArray[i].due;
-                };
-
-            new arraysAndObjects.task()
-        }
     }
 
     return { submitTask, taskList, projectList, projects, submitProject }
@@ -325,7 +325,6 @@ const sidebar = () => {
 
     sidebarTasks.onclick = function () {
         domMods.clearContent();
-        projectsTasks.taskList();
     }
 
     sidebarProject.onclick = function () {
@@ -351,6 +350,5 @@ const footer = () => {
 header(), sidebar(), content(), footer();
 
 //TODO make it so a "new task" button is added next to every created project and adds to that project then deprecate the tasks tab
-//TODO make a text stating the currently selected project when in the tasks tab
-
+//TODO line 282 comment
 //TODO create a delete button for tasks and projects
