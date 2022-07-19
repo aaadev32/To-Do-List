@@ -1,8 +1,8 @@
 import './style.css';
-import home from './icons/menu.svg';
-import plus from './icons/plus.png';
+import plus from './icons/plus.svg';
 import showTasks from './icons/show_tasks.png';
-import { test } from 'timespan';
+import addTasks from './icons/menu.svg';
+import trash from './icons/delete.svg';
 
 
 const arraysAndObjects = (() => {
@@ -23,19 +23,20 @@ const arraysAndObjects = (() => {
         due: 'due date',
     }
     //contains all project object
-    let taskArray = [testObj];
+    let taskArray = [];
     let projectArray = [];
-    let selectedProjectNum = null;
+    let selectedProject = null;
 
     class task {
 
-        constructor(title, description, priority, notes, due) {
+        constructor(title, description, priority, notes, due, taskIndex) {
 
             this.title = title;
             this.description = description;
             this.priority = priority;
             this.notes = notes;
             this.due = due;
+            this.taskIndex = taskIndex;
 
 
         }
@@ -43,11 +44,12 @@ const arraysAndObjects = (() => {
     }
 
     class project {
-        constructor(title, notes, due) {
+        constructor(title, notes, due, projectIndex) {
 
             this.title = title;
             this.notes = notes;
             this.due = due;
+            this.projectIndex = projectIndex
         }
     }
 
@@ -56,8 +58,13 @@ const arraysAndObjects = (() => {
         return name;
     }
 
+    const deleteindex = (array, index) => {
+        array.splice(index, 1);
+        return 1;
+    }
 
-    return { task, project, newArray, projectArray, taskArray };
+
+    return { task, project, newArray, projectArray, taskArray, deleteindex };
 })();
 
 const domMods = (() => {
@@ -118,49 +125,33 @@ const projectsTasks = (() => {
 
     const taskList = () => {
 
-        domMods.clearContent();
         domMods.createElementAppend('div', 'task-list', 'selected-project-container');
-        domMods.createElementAppend('button', 'new-task-button', 'task-list');
 
         //builds task list from taskArray
         for (let i = 0; i < arraysAndObjects.taskArray.length; i++) {
-            domMods.createIdClassElementAppend('div', `task-${i}`, 'task-list', 'task-list-items');
 
-            domMods.createIdClassElementAppend('div', `title-container-${i}`, `task-${i}`, 'title-list-div');
-            document.getElementById(`title-container-${i}`).textContent = arraysAndObjects.taskArray[i].title;
 
-            domMods.createIdClassElementAppend('div', `description-container-${i}`, `task-${i}`, 'description-list-div')
-            document.getElementById(`description-container-${i}`).textContent = arraysAndObjects.taskArray[i].description;
+            document.getElementById(`expand-tasks-${i}`).onclick = function () {
+                projectList();
+                domMods.createElementAppend('div', `project-task-expansion-${i}`, `selected-project-container`);
+                const taskTitles = domMods.createElementAppend('div', `project-expansion-title-${i}`, `selected-project-container`);
+                const taskDescription = domMods.createElementAppend('div', `project-expansion-description-${i}`, `selected-project-container`);
+                const taskNotes = domMods.createElementAppend('div', `project-expansion-notes-${i}`, `selected-project-container`);
+                const taskPriority = domMods.createElementAppend('div', `project-expansion-priority-${i}`, `selected-project-container`);
+                const taskDueDates = domMods.createElementAppend('div', `project-expansion-due-${i}`, `selected-project-container`);
+                // projectsTasks.taskList(); make this function parameter acess the associated taskArray index
 
-            domMods.createIdClassElementAppend('div', `priority-container-${i}`, `task-${i}`, 'priority-list-div')
-            document.getElementById(`priority-container-${i}`).textContent = arraysAndObjects.taskArray[i].priority;
+                console.log('expansion!');
+                document.getElementById(`project-list-${arraysAndObjects.selectedProject}`).style.backgroundColor = 'white';
+                document.getElementById(`project-expansion-title-${i}`).textContent = arraysAndObjects.taskArray[i].title;
+                document.getElementById(`project-expansion-description-${i}`).textContent = arraysAndObjects.taskArray[i].description;
+                document.getElementById(`project-expansion-notes-${i}`).textContent = arraysAndObjects.taskArray[i].notes;
+                document.getElementById(`project-expansion-priority-${i}`).textContent = arraysAndObjects.taskArray[i].priority;
+                document.getElementById(`project-expansion-due-${i}`).textContent = arraysAndObjects.taskArray[i].due;
 
-            domMods.createIdClassElementAppend('div', `notes-container-${i}`, `task-${i}`, 'notes-list-div')
-            document.getElementById(`notes-container-${i}`).textContent = arraysAndObjects.taskArray[i].notes;
-
-            domMods.createIdClassElementAppend('div', `due-date-container-${i}`, `task-${i}`, 'due-date-list-div')
-            document.getElementById(`due-date-container-${i}`).textContent = arraysAndObjects.taskArray[i].due;
+            }
 
         }
-
-
-        //opens new task form
-        document.getElementById('new-task-button').onclick = function () {
-            domMods.clearContent();
-            document.getElementById('task-form').style.display = 'flex';
-        }
-
-        //submits form data to class constructor and pushes object to taskArray
-        document.getElementById('form-submit-button').onclick = function () {
-            projectsTasks.submitTask();
-            domMods.clearContent();
-            projectsTasks.taskList();
-        }
-
-        document.getElementById('new-task-button').textContent = 'New task';
-
-        return 1;
-
     }
 
     const submitTask = () => {
@@ -169,24 +160,30 @@ const projectsTasks = (() => {
         const formPriority = document.getElementById('priority').value;
         const formNotes = document.getElementById('notes').value;
         const formDue = document.getElementById('due-date').value;
+        const selectedProject = arraysAndObjects.selectedProject;
 
-        const temp = new arraysAndObjects.task(formTitle, formDescription, formPriority, formNotes, formDue);
+        const temp = new arraysAndObjects.task(formTitle, formDescription, formPriority, formNotes, formDue, selectedProject);
         arraysAndObjects.taskArray.push(temp);
         console.log(arraysAndObjects.taskArray);
     }
 
 
     const projectList = () => {
-
         domMods.removeChildren(document.getElementById('project-list-container'));
         domMods.createElementAppend('div', 'selected-project-container', 'project-list-container');
 
-
+        //closes form and repopulates project list
+        document.getElementById('form-submit-button').onclick = function () {
+            submitTask();
+            document.getElementById('task-form').style.display = 'none';
+        }
         //creates all saved projects and their associated tasks
         for (let i = 0; i < arraysAndObjects.projectArray.length; i++) {
 
             domMods.createIdClassElementAppend('div', `project-list-${i}`, 'project-list-container', 'project-lists');
-            domMods.ImgIdClassAppend(`expand-tasks-${i}`, 'project-list-items', showTasks, `project-list-${i}`);
+            domMods.ImgIdClassAppend(`add-tasks-${i}`, 'project-list-items', showTasks, `project-list-${i}`);
+            domMods.ImgIdClassAppend(`expand-tasks-${i}`, `project-list-items`, addTasks, `project-list-${i}`);
+            domMods.ImgIdClassAppend(`delete-tasks-${i}`, `project-list-items`, trash, `project-list-${i}`);
 
             domMods.createIdClassElementAppend('div', `project-title-${i}`, `project-list-${i}`, 'project-list-items');
             domMods.createIdClassElementAppend('div', `project-notes-${i}`, `project-list-${i}`, 'project-list-items');
@@ -196,42 +193,29 @@ const projectsTasks = (() => {
             document.getElementById(`project-notes-${i}`).textContent = arraysAndObjects.projectArray[i].notes;
             document.getElementById(`project-due-${i}`).textContent = arraysAndObjects.projectArray[i].due;
 
+            //opens new task form
+            document.getElementById(`add-tasks-${i}`).onclick = function () {
+                arraysAndObjects.selectedProject = i;
+                console.log(`selected project = ${i}`)
+                domMods.clearContent();
+                document.getElementById('task-form').style.display = 'flex';
+            }
+
+            //shows current projects tasks
             document.getElementById(`expand-tasks-${i}`).onclick = function () {
-                //store num not updating when a new list selection is made (i think: test 7/13/22)
                 arraysAndObjects.selectedProjectNum = i;
+                taskList();
                 console.log(arraysAndObjects.selectedProjectNum);
-                let selectedProjectIndex = arraysAndObjects.selectedProjectNum
                 domMods.removeChildren(document.getElementById('selected-project-container'));
                 let projectArray = arraysAndObjects.projectArray;
+            }
 
-                for (let i = 0; i < arraysAndObjects.taskArray.length; i++) {
+            document.getElementById(`delete-tasks-${i}`).onclick = function () {
+                console.log('task deleted!')
+                //arraysAndObjects.deleteindex(taskArray, i);
 
-
-                    document.getElementById(`expand-tasks-${i}`).onclick =
-
-                        domMods.createElementAppend('div', `project-task-expansion-${i}`, `selected-project-container`);
-                    const taskTitles = domMods.createElementAppend('div', `project-expansion-title-${i}`, `selected-project-container`);
-                    const taskDescription = domMods.createElementAppend('div', `project-expansion-description-${i}`, `selected-project-container`);
-                    const taskNotes = domMods.createElementAppend('div', `project-expansion-notes-${i}`, `selected-project-container`);
-                    const taskPriority = domMods.createElementAppend('div', `project-expansion-priority-${i}`, `selected-project-container`);
-                    const taskDueDates = domMods.createElementAppend('div', `project-expansion-due-${i}`, `selected-project-container`);
-                    // projectsTasks.taskList(); make this function parameter acess the associated taskArray index
-
-                    console.log('expansion!');
-                    console.log('expanding tasks');
-
-                    document.getElementById(`project-expansion-title-${i}`).value = arraysAndObjects.taskArray[i].title;
-                    document.getElementById(`project-expansion-description-${i}`).value = arraysAndObjects.taskArray[i].description;
-                    document.getElementById(`project-expansion-notes-${i}`).value = arraysAndObjects.taskArray[i].notes;
-                    document.getElementById(`project-expansion-priority-${i}`).value = arraysAndObjects.taskArray[i].priority;
-                    document.getElementById(`project-expansion-due-${i}`).value = arraysAndObjects.taskArray[i].due;
-
-                }
-                //projectList must be invoked each click or storeNum will not be updated
             }
         }
-
-        //when a project is selected the associated tasks will be appended here
     }
 
     const submitProject = () => {
@@ -239,13 +223,14 @@ const projectsTasks = (() => {
         const projectTitle = document.getElementById(`project-title`).value;
         const projectNotes = document.getElementById(`project-notes`).value;
         const projectDueDate = document.getElementById(`project-due-date`).value;
-
         let newProject = new arraysAndObjects.project(projectTitle, projectNotes, projectDueDate)
+
         arraysAndObjects.projectArray.push(newProject);
-        console.log('submitted')
         console.log(arraysAndObjects.projectArray)
 
         document.getElementById('project-form').style.display = 'none';
+        projectList();
+
     }
 
     const projects = () => {
@@ -256,11 +241,10 @@ const projectsTasks = (() => {
 
         domMods.createElementAppend('div', 'project-container', 'content');
         domMods.createElementAppend('div', 'project-list-container', 'project-container');
-        domMods.createElementAppend('div', 'project-button-container', 'project-container');
 
         document.getElementById('project-button-container').textContent = 'New Project';
-
         domMods.createElementAppend('button', 'add-project-button', 'project-button-container');
+
         domMods.ImgAppend('plus-symbol', plus, 'add-project-button');
 
 
@@ -289,12 +273,6 @@ const projectsTasks = (() => {
         }
     }
 
-    const expandProjectTasks = () => {
-        //projectArr[i][j];
-        // try creating a nested array where 'i' is the projects and 'j' is the task objects associated with their 'i' index projects
-
-    }
-
     return { submitTask, taskList, projectList, projects, submitProject }
 })();
 
@@ -305,23 +283,21 @@ const header = () => {
     domMods.createElementAppend('div', 'project-logo', 'header');
 
     document.getElementById('project-logo').textContent = 'My ToDo App';
-
-    domMods.ImgAppend('test-img', home, 'menu-icon');
 }
 
 const sidebar = () => {
     const contentDiv = document.getElementById('content');
 
     document.getElementById('sidebar').style.gridArea = 'sb';
+
     domMods.createElementAppend('div', 'home-tab', 'sidebar');
     domMods.createElementAppend('div', 'tasks-tab', 'sidebar');
     domMods.createElementAppend('div', 'project-tab', 'sidebar');
+    domMods.createElementAppend('div', 'project-button-container', 'sidebar');
 
     const sidebarHome = document.getElementById('home-tab');
     const sidebarTasks = document.getElementById('tasks-tab');
     const sidebarProject = document.getElementById('project-tab');
-
-
 
     sidebarTasks.onclick = function () {
         domMods.clearContent();
@@ -334,7 +310,6 @@ const sidebar = () => {
     }
 
     document.getElementById('home-tab').textContent = 'Home';
-    document.getElementById('tasks-tab').textContent = 'Tasks';
     document.getElementById('project-tab').textContent = 'Projects';
 }
 

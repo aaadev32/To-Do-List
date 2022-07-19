@@ -81,11 +81,23 @@ body {
     flex-direction: column;
 }
 
+#add-project-button {
+    display: flex;
+    height: 23px;
+    width: 29px;
+    margin-left: 4px;
+}
+
+#plus-symbol {
+    height: 18px;
+    width: 18px;
+}
+
 #project-button-container {
     display: flex;
-    flex-direction: row-reverse;
     align-items: center;
 }
+
 
 
 
@@ -96,10 +108,15 @@ body {
 
 .project-lists {
     display: flex;
-    align-items: center;}
+    align-items: center;
+}
 
 .project-lists>* {
     border: 2px solid black;
+}
+
+.project-list-items {
+    height: 20px;
 }
 
 .task-list-items {
