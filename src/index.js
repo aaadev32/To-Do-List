@@ -29,18 +29,15 @@ const arraysAndObjects = (() => {
 
     class task {
 
-        constructor(title, description, priority, notes, due, taskIndex) {
+        constructor(title, description, priority, notes, due, projectIndex) {
 
             this.title = title;
             this.description = description;
             this.priority = priority;
             this.notes = notes;
             this.due = due;
-            this.taskIndex = taskIndex;
-
-
+            this.projectIndex = projectIndex;
         }
-
     }
 
     class project {
@@ -76,6 +73,7 @@ const domMods = (() => {
         }
     }
 
+    //the point of this function is to clear the content div without deleting the hidden forms
     function clearContent() {
 
         document.getElementById('task-form').style.display = 'none';
@@ -125,13 +123,16 @@ const projectsTasks = (() => {
 
     const taskList = () => {
 
-        domMods.createElementAppend('div', 'task-list', 'selected-project-container');
+        if (document.getElementById('task-list') == undefined) {
+            domMods.createElementAppend('div', 'task-list', 'selected-project-container');
+        }
 
         //builds task list from taskArray
         for (let i = 0; i < arraysAndObjects.taskArray.length; i++) {
 
 
             document.getElementById(`expand-tasks-${i}`).onclick = function () {
+                projects();
                 projectList();
                 domMods.createElementAppend('div', `project-task-expansion-${i}`, `selected-project-container`);
                 const taskTitles = domMods.createElementAppend('div', `project-expansion-title-${i}`, `selected-project-container`);
@@ -148,9 +149,7 @@ const projectsTasks = (() => {
                 document.getElementById(`project-expansion-notes-${i}`).textContent = arraysAndObjects.taskArray[i].notes;
                 document.getElementById(`project-expansion-priority-${i}`).textContent = arraysAndObjects.taskArray[i].priority;
                 document.getElementById(`project-expansion-due-${i}`).textContent = arraysAndObjects.taskArray[i].due;
-
             }
-
         }
     }
 
@@ -176,6 +175,8 @@ const projectsTasks = (() => {
         document.getElementById('form-submit-button').onclick = function () {
             submitTask();
             document.getElementById('task-form').style.display = 'none';
+            projects();
+            projectList();
         }
         //creates all saved projects and their associated tasks
         for (let i = 0; i < arraysAndObjects.projectArray.length; i++) {
@@ -203,17 +204,24 @@ const projectsTasks = (() => {
 
             //shows current projects tasks
             document.getElementById(`expand-tasks-${i}`).onclick = function () {
-                arraysAndObjects.selectedProjectNum = i;
+                //domMods.removeChildren(document.getElementById('selected-project-container')); this causes errors when creating tasks in other projects
+                arraysAndObjects.selectedProject = i;
                 taskList();
-                console.log(arraysAndObjects.selectedProjectNum);
-                domMods.removeChildren(document.getElementById('selected-project-container'));
-                let projectArray = arraysAndObjects.projectArray;
+                console.log(arraysAndObjects.selectedProject);
+                //task list only appears on second click
+                return false;
             }
 
             document.getElementById(`delete-tasks-${i}`).onclick = function () {
-                console.log('task deleted!')
-                //arraysAndObjects.deleteindex(taskArray, i);
-
+                arraysAndObjects.selectedProject = i;
+                //loop through task array deleting all tasks with associated i index
+                for (let j = 0; j < arraysAndObjects.taskArray.length; j++) {
+                    if (arraysAndObjects.taskArray[j].projectIndex == arraysAndObjects.selectedProject) {
+                        arraysAndObjects.deleteindex(arraysAndObjects.taskArray, i);
+                        console.log('task deleted!' + `${console.log(arraysAndObjects.taskArray)}`);
+                        taskList();
+                    }
+                }
             }
         }
     }
@@ -230,6 +238,7 @@ const projectsTasks = (() => {
 
         document.getElementById('project-form').style.display = 'none';
         projectList();
+        return false;
 
     }
 
@@ -237,8 +246,6 @@ const projectsTasks = (() => {
         let projectListClass = document.getElementsByClassName('project-list-items');
 
         domMods.clearContent();
-        console.log(document.getElementById('content'));
-
         domMods.createElementAppend('div', 'project-container', 'content');
         domMods.createElementAppend('div', 'project-list-container', 'project-container');
 
@@ -247,8 +254,6 @@ const projectsTasks = (() => {
 
         domMods.ImgAppend('plus-symbol', plus, 'add-project-button');
 
-
-        projectList();
 
         document.getElementById('add-project-button').onclick = function () {
 
@@ -324,6 +329,7 @@ const footer = () => {
 
 header(), sidebar(), content(), footer();
 
-//TODO make it so a "new task" button is added next to every created project and adds to that project then deprecate the tasks tab
+//TODO after adding a task the project list doesnt refresh 7/19/22
+//TODO line 209 taskList only appears on 2nd click
 //TODO line 282 comment
 //TODO create a delete button for tasks and projects
