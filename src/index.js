@@ -123,18 +123,14 @@ const projectsTasks = (() => {
 
     const taskList = () => {
 
-        if (document.getElementById('task-list') == undefined) {
-            domMods.createElementAppend('div', 'task-list', 'selected-project-container');
+        if (document.getElementById('task-0') != null) {
+            domMods.removeChildren(document.getElementById('selected-project-container'));
         }
-
         //builds task list from taskArray
-        for (let i = 0; i < arraysAndObjects.taskArray.length; i++) {
-
-
+        for (let i = 0; i < arraysAndObjects.projectArray.length; i++) {
             document.getElementById(`expand-tasks-${i}`).onclick = function () {
-                projects();
-                projectList();
                 domMods.createElementAppend('div', `project-task-expansion-${i}`, `selected-project-container`);
+                const taskCount = domMods.createElementAppend('div', `task-${i}`, `selected-project-container`);
                 const taskTitles = domMods.createElementAppend('div', `project-expansion-title-${i}`, `selected-project-container`);
                 const taskDescription = domMods.createElementAppend('div', `project-expansion-description-${i}`, `selected-project-container`);
                 const taskNotes = domMods.createElementAppend('div', `project-expansion-notes-${i}`, `selected-project-container`);
@@ -143,6 +139,7 @@ const projectsTasks = (() => {
                 // projectsTasks.taskList(); make this function parameter acess the associated taskArray index
 
                 console.log('expansion!');
+                document.getElementById(`task-${i}`).textContent = `${i + 1}.`
                 document.getElementById(`project-list-${arraysAndObjects.selectedProject}`).style.backgroundColor = 'white';
                 document.getElementById(`project-expansion-title-${i}`).textContent = arraysAndObjects.taskArray[i].title;
                 document.getElementById(`project-expansion-description-${i}`).textContent = arraysAndObjects.taskArray[i].description;
@@ -175,12 +172,13 @@ const projectsTasks = (() => {
         document.getElementById('form-submit-button').onclick = function () {
             submitTask();
             document.getElementById('task-form').style.display = 'none';
+
+            //refreshes projects nodes and project lists
             projects();
             projectList();
         }
         //creates all saved projects and their associated tasks
         for (let i = 0; i < arraysAndObjects.projectArray.length; i++) {
-
             domMods.createIdClassElementAppend('div', `project-list-${i}`, 'project-list-container', 'project-lists');
             domMods.ImgIdClassAppend(`add-tasks-${i}`, 'project-list-items', showTasks, `project-list-${i}`);
             domMods.ImgIdClassAppend(`expand-tasks-${i}`, `project-list-items`, addTasks, `project-list-${i}`);
@@ -196,20 +194,23 @@ const projectsTasks = (() => {
 
             //opens new task form
             document.getElementById(`add-tasks-${i}`).onclick = function () {
+
                 arraysAndObjects.selectedProject = i;
                 console.log(`selected project = ${i}`)
                 domMods.clearContent();
                 document.getElementById('task-form').style.display = 'flex';
+
+                //expand-tasks and delete-tasks throws null element error after submitting a task on first click but not subsequent
+
             }
 
             //shows current projects tasks
             document.getElementById(`expand-tasks-${i}`).onclick = function () {
-                //domMods.removeChildren(document.getElementById('selected-project-container')); this causes errors when creating tasks in other projects
+
+                domMods.removeChildren(document.getElementById('selected-project-container')); //this causes errors when creating tasks in other projects
                 arraysAndObjects.selectedProject = i;
                 taskList();
                 console.log(arraysAndObjects.selectedProject);
-                //task list only appears on second click
-                return false;
             }
 
             document.getElementById(`delete-tasks-${i}`).onclick = function () {
@@ -238,7 +239,6 @@ const projectsTasks = (() => {
 
         document.getElementById('project-form').style.display = 'none';
         projectList();
-        return false;
 
     }
 
