@@ -25,7 +25,7 @@ const arraysAndObjects = (() => {
     //contains all project object
     let taskArray = [];
     let projectArray = [];
-    let selectedProject = null;
+    let selectedProject = 0;
 
     class task {
 
@@ -50,6 +50,18 @@ const arraysAndObjects = (() => {
         }
     }
 
+    //this function is used to create an array based off of the project index of tasks which is automatically assigned when a user adds a task in a project
+    const fetchProjectTasks = (index) => {
+        let fetchedTasks = [];
+        for (let i = 0; i < taskArray.length; i++) {
+            if (arraysAndObjects.taskArray[i].projectIndex == index) {
+                fetchedTasks.push(arraysAndObjects.taskArray[i]);
+            }
+            //fetch tasks
+        }
+        return fetchedTasks;
+    }
+
     const newArray = (name) => {
         name = [];
         return name;
@@ -61,7 +73,7 @@ const arraysAndObjects = (() => {
     }
 
 
-    return { task, project, newArray, projectArray, taskArray, deleteindex };
+    return { task, project, newArray, projectArray, taskArray, deleteindex, fetchProjectTasks };
 })();
 
 const domMods = (() => {
@@ -122,30 +134,30 @@ const domMods = (() => {
 const projectsTasks = (() => {
 
     const taskList = () => {
+        //associatedTasks will create an array of task objects that have the corresponding index of their respective projects
+        let associatedTasks = arraysAndObjects.fetchProjectTasks(arraysAndObjects.selectedProject);
+        console.log(`associated task array${associatedTasks}`);
 
-        if (document.getElementById('task-0') != null) {
-            domMods.removeChildren(document.getElementById('selected-project-container'));
-        }
         //builds task list from taskArray
-        for (let i = 0; i < arraysAndObjects.projectArray.length; i++) {
-            document.getElementById(`expand-tasks-${i}`).onclick = function () {
-                domMods.createElementAppend('div', `project-task-expansion-${i}`, `selected-project-container`);
-                const taskCount = domMods.createElementAppend('div', `task-${i}`, `selected-project-container`);
-                const taskTitles = domMods.createElementAppend('div', `project-expansion-title-${i}`, `selected-project-container`);
-                const taskDescription = domMods.createElementAppend('div', `project-expansion-description-${i}`, `selected-project-container`);
-                const taskNotes = domMods.createElementAppend('div', `project-expansion-notes-${i}`, `selected-project-container`);
-                const taskPriority = domMods.createElementAppend('div', `project-expansion-priority-${i}`, `selected-project-container`);
-                const taskDueDates = domMods.createElementAppend('div', `project-expansion-due-${i}`, `selected-project-container`);
-                // projectsTasks.taskList(); make this function parameter acess the associated taskArray index
+        for (let j = 0; j < arraysAndObjects.projectArray.length; j++) { //conditional statement in this loop needs work
+            document.getElementById(`expand-tasks-${j}`).onclick = function () {
+                for (let i = 0; i < associatedTasks.length; i++) {
+                    domMods.createIdClassElementAppend('div', `project-task-expansion-${i}`, `selected-project-container`, 'expanded-task-list');
+                    domMods.createElementAppend('div', `task-${i}`, `project-task-expansion-${i}`);
+                    domMods.createElementAppend('div', `project-expansion-title-${i}`, `project-task-expansion-${i}`);
+                    domMods.createElementAppend('div', `project-expansion-description-${i}`, `project-task-expansion-${i}`);
+                    domMods.createElementAppend('div', `project-expansion-notes-${i}`, `project-task-expansion-${i}`);
+                    domMods.createElementAppend('div', `project-expansion-priority-${i}`, `project-task-expansion-${i}`);
+                    domMods.createElementAppend('div', `project-expansion-due-${i}`, `project-task-expansion-${i}`);
 
-                console.log('expansion!');
-                document.getElementById(`task-${i}`).textContent = `${i + 1}.`
-                document.getElementById(`project-list-${arraysAndObjects.selectedProject}`).style.backgroundColor = 'white';
-                document.getElementById(`project-expansion-title-${i}`).textContent = arraysAndObjects.taskArray[i].title;
-                document.getElementById(`project-expansion-description-${i}`).textContent = arraysAndObjects.taskArray[i].description;
-                document.getElementById(`project-expansion-notes-${i}`).textContent = arraysAndObjects.taskArray[i].notes;
-                document.getElementById(`project-expansion-priority-${i}`).textContent = arraysAndObjects.taskArray[i].priority;
-                document.getElementById(`project-expansion-due-${i}`).textContent = arraysAndObjects.taskArray[i].due;
+                    document.getElementById(`task-${i}`).textContent = `${i + 1}.`
+                    document.getElementById(`project-list-${arraysAndObjects.selectedProject}`).style.backgroundColor = 'white';
+                    document.getElementById(`project-expansion-title-${i}`).textContent = arraysAndObjects.taskArray[i].title;
+                    document.getElementById(`project-expansion-description-${i}`).textContent = arraysAndObjects.taskArray[i].description;
+                    document.getElementById(`project-expansion-notes-${i}`).textContent = arraysAndObjects.taskArray[i].notes;
+                    document.getElementById(`project-expansion-priority-${i}`).textContent = arraysAndObjects.taskArray[i].priority;
+                    document.getElementById(`project-expansion-due-${i}`).textContent = arraysAndObjects.taskArray[i].due;
+                }
             }
         }
     }
@@ -199,15 +211,13 @@ const projectsTasks = (() => {
                 console.log(`selected project = ${i}`)
                 domMods.clearContent();
                 document.getElementById('task-form').style.display = 'flex';
-
-                //expand-tasks and delete-tasks throws null element error after submitting a task on first click but not subsequent
-
             }
 
             //shows current projects tasks
             document.getElementById(`expand-tasks-${i}`).onclick = function () {
-
-                domMods.removeChildren(document.getElementById('selected-project-container')); //this causes errors when creating tasks in other projects
+                //cleans the previous list when selecting another projects task list
+                domMods.removeChildren(document.getElementById('selected-project-container'));
+                
                 arraysAndObjects.selectedProject = i;
                 taskList();
                 console.log(arraysAndObjects.selectedProject);
@@ -220,9 +230,9 @@ const projectsTasks = (() => {
                     if (arraysAndObjects.taskArray[j].projectIndex == arraysAndObjects.selectedProject) {
                         arraysAndObjects.deleteindex(arraysAndObjects.taskArray, i);
                         console.log('task deleted!' + `${console.log(arraysAndObjects.taskArray)}`);
-                        taskList();
                     }
                 }
+                taskList();
             }
         }
     }
@@ -257,6 +267,8 @@ const projectsTasks = (() => {
 
         document.getElementById('add-project-button').onclick = function () {
 
+            //calling project list refreshes the associated nodes and keeps expanded lists from being persistent through the project form after expanding a list
+            projectList();
             document.getElementById('project-form').style.display = 'flex';
             document.getElementById('project-button-container').style.display = 'none';
             Array.from(projectListClass).forEach(div => {
