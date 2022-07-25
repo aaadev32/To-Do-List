@@ -135,11 +135,28 @@ const projectsTasks = (() => {
 
     const taskList = () => {
         //builds task list from taskArray
-        for (let j = 0; j < arraysAndObjects.projectArray.length; j++) { //conditional statement in this loop needs work
-            document.getElementById(`expand-tasks-${j}`).onclick = function () {
-                taskDropDownList()
-            }
+        let associatedTasks = arraysAndObjects.fetchProjectTasks(arraysAndObjects.selectedProject);
+        //associatedTasks will create an array of task objects that have the corresponding index of their respective projects
+        console.log(`associated task array${associatedTasks}`);
+
+        for (let i = 0; i < associatedTasks.length; i++) {
+            domMods.createIdClassElementAppend('div', `project-task-expansion-${i}`, `selected-project-container`, 'expanded-task-list');
+            domMods.createElementAppend('div', `task-${i}`, `project-task-expansion-${i}`);
+            domMods.createElementAppend('div', `project-expansion-title-${i}`, `project-task-expansion-${i}`);
+            domMods.createElementAppend('div', `project-expansion-description-${i}`, `project-task-expansion-${i}`);
+            domMods.createElementAppend('div', `project-expansion-notes-${i}`, `project-task-expansion-${i}`);
+            domMods.createElementAppend('div', `project-expansion-priority-${i}`, `project-task-expansion-${i}`);
+            domMods.createElementAppend('div', `project-expansion-due-${i}`, `project-task-expansion-${i}`);
+
+            document.getElementById(`task-${i}`).textContent = `${i + 1}.`
+            document.getElementById(`project-list-${arraysAndObjects.selectedProject}`).style.backgroundColor = 'white';
+            document.getElementById(`project-expansion-title-${i}`).textContent = arraysAndObjects.taskArray[i].title;
+            document.getElementById(`project-expansion-description-${i}`).textContent = arraysAndObjects.taskArray[i].description;
+            document.getElementById(`project-expansion-notes-${i}`).textContent = arraysAndObjects.taskArray[i].notes;
+            document.getElementById(`project-expansion-priority-${i}`).textContent = arraysAndObjects.taskArray[i].priority;
+            document.getElementById(`project-expansion-due-${i}`).textContent = arraysAndObjects.taskArray[i].due;
         }
+
     }
 
     const submitTask = () => {
@@ -214,39 +231,13 @@ const projectsTasks = (() => {
                         arraysAndObjects.deleteindex(arraysAndObjects.taskArray, i);
                     }
                 }
-                /*
-                Array.From(expandedTaskListClass).forEach(div => {
-                    domMods.removeChildren(div); // needs work
-                });
-                */
+                projects();
+                projectList();
                 taskList();
             }
         }
     }
 
-    const taskDropDownList = () => {
-        let associatedTasks = arraysAndObjects.fetchProjectTasks(arraysAndObjects.selectedProject);
-        //associatedTasks will create an array of task objects that have the corresponding index of their respective projects
-        console.log(`associated task array${associatedTasks}`);
-
-        for (let i = 0; i < associatedTasks.length; i++) {
-            domMods.createIdClassElementAppend('div', `project-task-expansion-${i}`, `selected-project-container`, 'expanded-task-list');
-            domMods.createElementAppend('div', `task-${i}`, `project-task-expansion-${i}`);
-            domMods.createElementAppend('div', `project-expansion-title-${i}`, `project-task-expansion-${i}`);
-            domMods.createElementAppend('div', `project-expansion-description-${i}`, `project-task-expansion-${i}`);
-            domMods.createElementAppend('div', `project-expansion-notes-${i}`, `project-task-expansion-${i}`);
-            domMods.createElementAppend('div', `project-expansion-priority-${i}`, `project-task-expansion-${i}`);
-            domMods.createElementAppend('div', `project-expansion-due-${i}`, `project-task-expansion-${i}`);
-
-            document.getElementById(`task-${i}`).textContent = `${i + 1}.`
-            document.getElementById(`project-list-${arraysAndObjects.selectedProject}`).style.backgroundColor = 'white';
-            document.getElementById(`project-expansion-title-${i}`).textContent = arraysAndObjects.taskArray[i].title;
-            document.getElementById(`project-expansion-description-${i}`).textContent = arraysAndObjects.taskArray[i].description;
-            document.getElementById(`project-expansion-notes-${i}`).textContent = arraysAndObjects.taskArray[i].notes;
-            document.getElementById(`project-expansion-priority-${i}`).textContent = arraysAndObjects.taskArray[i].priority;
-            document.getElementById(`project-expansion-due-${i}`).textContent = arraysAndObjects.taskArray[i].due;
-        }
-    }
 
     const submitProject = () => {
         let i = arraysAndObjects.projectArray.length;
@@ -281,7 +272,10 @@ const projectsTasks = (() => {
             //calling project list refreshes the associated nodes and keeps expanded lists from being persistent through the project form after expanding a list
             projectList();
             document.getElementById('project-form').style.display = 'flex';
+
+            /* might bring this line back if i move the new project button from the sidebar
             document.getElementById('project-button-container').style.display = 'none';
+            */
             Array.from(projectListClass).forEach(div => {
                 div.style.display = 'none';
             });
@@ -293,7 +287,9 @@ const projectsTasks = (() => {
             submitProject();
             projectList();
 
+            /* might bring this line back if i move the new project button from the sidebar
             document.getElementById('project-button-container').style.display = 'flex';
+            */
             Array.from(projectListClass).forEach(div => {
                 div.style.display = 'flex';
             });
@@ -325,17 +321,6 @@ const sidebar = () => {
 
     const sidebarHome = document.getElementById('home-tab');
     const sidebarTasks = document.getElementById('tasks-tab');
-    const sidebarProject = document.getElementById('project-tab');
-
-    sidebarTasks.onclick = function () {
-        domMods.clearContent();
-    }
-
-    sidebarProject.onclick = function () {
-        domMods.clearContent();
-        projectsTasks.projects();
-        projectsTasks.projectList();
-    }
 
     document.getElementById('home-tab').textContent = 'Home';
     document.getElementById('project-tab').textContent = 'Projects';
@@ -350,7 +335,7 @@ const footer = () => {
     document.getElementById('footer-stuff').textContent = 'footer stuff'
 }
 
-header(), sidebar(), content(), footer();
+header(), sidebar(), content(), footer(), projectsTasks.projects();
 
 //TODO after adding a task the project list doesnt refresh 7/19/22
 //TODO line 209 taskList only appears on 2nd click
