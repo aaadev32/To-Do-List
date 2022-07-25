@@ -148,8 +148,9 @@ const projectsTasks = (() => {
             domMods.createElementAppend('div', `project-expansion-priority-${i}`, `project-task-expansion-${i}`);
             domMods.createElementAppend('div', `project-expansion-due-${i}`, `project-task-expansion-${i}`);
 
-            document.getElementById(`task-${i}`).textContent = `${i + 1}.`
             document.getElementById(`project-list-${arraysAndObjects.selectedProject}`).style.backgroundColor = 'white';
+
+            document.getElementById(`task-${i}`).textContent = `${i + 1}.`
             document.getElementById(`project-expansion-title-${i}`).textContent = arraysAndObjects.taskArray[i].title;
             document.getElementById(`project-expansion-description-${i}`).textContent = arraysAndObjects.taskArray[i].description;
             document.getElementById(`project-expansion-notes-${i}`).textContent = arraysAndObjects.taskArray[i].notes;
@@ -217,6 +218,8 @@ const projectsTasks = (() => {
                 domMods.removeChildren(document.getElementById('selected-project-container'));
 
                 arraysAndObjects.selectedProject = i;
+                projects();
+                projectList();
                 taskList();
                 console.log(arraysAndObjects.selectedProject);
             }
