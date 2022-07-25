@@ -134,30 +134,10 @@ const domMods = (() => {
 const projectsTasks = (() => {
 
     const taskList = () => {
-        //associatedTasks will create an array of task objects that have the corresponding index of their respective projects
-        let associatedTasks = arraysAndObjects.fetchProjectTasks(arraysAndObjects.selectedProject);
-        console.log(`associated task array${associatedTasks}`);
-
         //builds task list from taskArray
         for (let j = 0; j < arraysAndObjects.projectArray.length; j++) { //conditional statement in this loop needs work
             document.getElementById(`expand-tasks-${j}`).onclick = function () {
-                for (let i = 0; i < associatedTasks.length; i++) {
-                    domMods.createIdClassElementAppend('div', `project-task-expansion-${i}`, `selected-project-container`, 'expanded-task-list');
-                    domMods.createElementAppend('div', `task-${i}`, `project-task-expansion-${i}`);
-                    domMods.createElementAppend('div', `project-expansion-title-${i}`, `project-task-expansion-${i}`);
-                    domMods.createElementAppend('div', `project-expansion-description-${i}`, `project-task-expansion-${i}`);
-                    domMods.createElementAppend('div', `project-expansion-notes-${i}`, `project-task-expansion-${i}`);
-                    domMods.createElementAppend('div', `project-expansion-priority-${i}`, `project-task-expansion-${i}`);
-                    domMods.createElementAppend('div', `project-expansion-due-${i}`, `project-task-expansion-${i}`);
-
-                    document.getElementById(`task-${i}`).textContent = `${i + 1}.`
-                    document.getElementById(`project-list-${arraysAndObjects.selectedProject}`).style.backgroundColor = 'white';
-                    document.getElementById(`project-expansion-title-${i}`).textContent = arraysAndObjects.taskArray[i].title;
-                    document.getElementById(`project-expansion-description-${i}`).textContent = arraysAndObjects.taskArray[i].description;
-                    document.getElementById(`project-expansion-notes-${i}`).textContent = arraysAndObjects.taskArray[i].notes;
-                    document.getElementById(`project-expansion-priority-${i}`).textContent = arraysAndObjects.taskArray[i].priority;
-                    document.getElementById(`project-expansion-due-${i}`).textContent = arraysAndObjects.taskArray[i].due;
-                }
+                taskDropDownList()
             }
         }
     }
@@ -175,7 +155,6 @@ const projectsTasks = (() => {
         console.log(arraysAndObjects.taskArray);
     }
 
-
     const projectList = () => {
         domMods.removeChildren(document.getElementById('project-list-container'));
         domMods.createElementAppend('div', 'selected-project-container', 'project-list-container');
@@ -185,9 +164,11 @@ const projectsTasks = (() => {
             submitTask();
             document.getElementById('task-form').style.display = 'none';
 
-            //refreshes projects nodes and project lists
+            //refreshes projects nodes, project lists and task lists
             projects();
             projectList();
+            taskList();
+
         }
         //creates all saved projects and their associated tasks
         for (let i = 0; i < arraysAndObjects.projectArray.length; i++) {
@@ -217,23 +198,53 @@ const projectsTasks = (() => {
             document.getElementById(`expand-tasks-${i}`).onclick = function () {
                 //cleans the previous list when selecting another projects task list
                 domMods.removeChildren(document.getElementById('selected-project-container'));
-                
+
                 arraysAndObjects.selectedProject = i;
                 taskList();
                 console.log(arraysAndObjects.selectedProject);
             }
 
             document.getElementById(`delete-tasks-${i}`).onclick = function () {
+                let expandedTaskListClass = document.getElementsByClassName(`expanded-task-list`)
                 arraysAndObjects.selectedProject = i;
                 //loop through task array deleting all tasks with associated i index
                 for (let j = 0; j < arraysAndObjects.taskArray.length; j++) {
                     if (arraysAndObjects.taskArray[j].projectIndex == arraysAndObjects.selectedProject) {
-                        arraysAndObjects.deleteindex(arraysAndObjects.taskArray, i);
                         console.log('task deleted!' + `${console.log(arraysAndObjects.taskArray)}`);
+                        arraysAndObjects.deleteindex(arraysAndObjects.taskArray, i);
                     }
                 }
+                /*
+                Array.From(expandedTaskListClass).forEach(div => {
+                    domMods.removeChildren(div); // needs work
+                });
+                */
                 taskList();
             }
+        }
+    }
+
+    const taskDropDownList = () => {
+        let associatedTasks = arraysAndObjects.fetchProjectTasks(arraysAndObjects.selectedProject);
+        //associatedTasks will create an array of task objects that have the corresponding index of their respective projects
+        console.log(`associated task array${associatedTasks}`);
+
+        for (let i = 0; i < associatedTasks.length; i++) {
+            domMods.createIdClassElementAppend('div', `project-task-expansion-${i}`, `selected-project-container`, 'expanded-task-list');
+            domMods.createElementAppend('div', `task-${i}`, `project-task-expansion-${i}`);
+            domMods.createElementAppend('div', `project-expansion-title-${i}`, `project-task-expansion-${i}`);
+            domMods.createElementAppend('div', `project-expansion-description-${i}`, `project-task-expansion-${i}`);
+            domMods.createElementAppend('div', `project-expansion-notes-${i}`, `project-task-expansion-${i}`);
+            domMods.createElementAppend('div', `project-expansion-priority-${i}`, `project-task-expansion-${i}`);
+            domMods.createElementAppend('div', `project-expansion-due-${i}`, `project-task-expansion-${i}`);
+
+            document.getElementById(`task-${i}`).textContent = `${i + 1}.`
+            document.getElementById(`project-list-${arraysAndObjects.selectedProject}`).style.backgroundColor = 'white';
+            document.getElementById(`project-expansion-title-${i}`).textContent = arraysAndObjects.taskArray[i].title;
+            document.getElementById(`project-expansion-description-${i}`).textContent = arraysAndObjects.taskArray[i].description;
+            document.getElementById(`project-expansion-notes-${i}`).textContent = arraysAndObjects.taskArray[i].notes;
+            document.getElementById(`project-expansion-priority-${i}`).textContent = arraysAndObjects.taskArray[i].priority;
+            document.getElementById(`project-expansion-due-${i}`).textContent = arraysAndObjects.taskArray[i].due;
         }
     }
 
