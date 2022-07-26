@@ -50,7 +50,7 @@ const arraysAndObjects = (() => {
         }
     }
 
-    //this function is used to create an array based off of the project index of tasks which is automatically assigned when a user adds a task in a project
+    //this function is used to create an array based off of the projectIndex property of task objects which is assigned based off of the selectedProject variable
     const fetchProjectTasks = (index) => {
         let fetchedTasks = [];
         for (let i = 0; i < taskArray.length; i++) {
@@ -87,7 +87,6 @@ const domMods = (() => {
 
     //the point of this function is to clear the content div without deleting the hidden forms
     function clearContent() {
-
         document.getElementById('task-form').style.display = 'none';
         document.getElementById('project-form').style.display = 'none';
         while (contentDiv.childNodes.length > 4) {
@@ -140,6 +139,7 @@ const projectsTasks = (() => {
         console.log(`associated task array${associatedTasks}`);
 
         for (let i = 0; i < associatedTasks.length; i++) {
+
             domMods.createIdClassElementAppend('div', `project-task-expansion-${i}`, `selected-project-container`, 'expanded-task-list');
             domMods.createElementAppend('div', `task-${i}`, `project-task-expansion-${i}`);
             domMods.createElementAppend('div', `project-expansion-title-${i}`, `project-task-expansion-${i}`);
@@ -147,6 +147,22 @@ const projectsTasks = (() => {
             domMods.createElementAppend('div', `project-expansion-notes-${i}`, `project-task-expansion-${i}`);
             domMods.createElementAppend('div', `project-expansion-priority-${i}`, `project-task-expansion-${i}`);
             domMods.createElementAppend('div', `project-expansion-due-${i}`, `project-task-expansion-${i}`);
+
+            domMods.ImgIdClassAppend(`delete-tasks-${i}`, `delete-task`, trash, `project-task-expansion-${i}`);
+            document.getElementById(`delete-tasks-${i}`).onclick = function () {
+                let expandedTaskListClass = document.getElementsByClassName(`expanded-task-list`)
+                //this loop finds the associatedTasks in the taskArray and deletes them when the corresponding delete-tasks function is triggered
+                for (let j = 0; j < arraysAndObjects.taskArray.length; j++) {
+                    //the below line should delete the taskArray object when the associatedTask[i]'s delete-task function is clicked
+                    if (arraysAndObjects.taskArray[j] == associatedTasks[i]) {
+                        console.log('task deleted!' + `${console.log(arraysAndObjects.taskArray)}`);
+                        arraysAndObjects.deleteindex(arraysAndObjects.taskArray, i);
+                    }
+                }
+                projects();
+                projectList();
+                taskList();
+            }
 
             document.getElementById(`project-list-${arraysAndObjects.selectedProject}`).style.backgroundColor = 'white';
 
@@ -182,7 +198,6 @@ const projectsTasks = (() => {
             submitTask();
             document.getElementById('task-form').style.display = 'none';
 
-            //refreshes projects nodes, project lists and task lists
             projects();
             projectList();
             taskList();
@@ -193,7 +208,6 @@ const projectsTasks = (() => {
             domMods.createIdClassElementAppend('div', `project-list-${i}`, 'project-list-container', 'project-lists');
             domMods.ImgIdClassAppend(`add-tasks-${i}`, 'project-list-items', showTasks, `project-list-${i}`);
             domMods.ImgIdClassAppend(`expand-tasks-${i}`, `project-list-items`, addTasks, `project-list-${i}`);
-            domMods.ImgIdClassAppend(`delete-tasks-${i}`, `project-list-items`, trash, `project-list-${i}`);
 
             domMods.createIdClassElementAppend('div', `project-title-${i}`, `project-list-${i}`, 'project-list-items');
             domMods.createIdClassElementAppend('div', `project-notes-${i}`, `project-list-${i}`, 'project-list-items');
@@ -224,26 +238,14 @@ const projectsTasks = (() => {
                 console.log(arraysAndObjects.selectedProject);
             }
 
-            document.getElementById(`delete-tasks-${i}`).onclick = function () {
-                let expandedTaskListClass = document.getElementsByClassName(`expanded-task-list`)
-                arraysAndObjects.selectedProject = i;
-                //loop through task array deleting all tasks with associated i index
-                for (let j = 0; j < arraysAndObjects.taskArray.length; j++) {
-                    if (arraysAndObjects.taskArray[j].projectIndex == arraysAndObjects.selectedProject) {
-                        console.log('task deleted!' + `${console.log(arraysAndObjects.taskArray)}`);
-                        arraysAndObjects.deleteindex(arraysAndObjects.taskArray, i);
-                    }
-                }
-                projects();
-                projectList();
-                taskList();
-            }
         }
     }
 
 
     const submitProject = () => {
+        //the 2 below lines keep project tasks from getting mixed when more than 1 project is created
         let i = arraysAndObjects.projectArray.length;
+        arraysAndObjects.selectedProject = i;
         const projectTitle = document.getElementById(`project-title`).value;
         const projectNotes = document.getElementById(`project-notes`).value;
         const projectDueDate = document.getElementById(`project-due-date`).value;
@@ -340,7 +342,6 @@ const footer = () => {
 
 header(), sidebar(), content(), footer(), projectsTasks.projects();
 
-//TODO after adding a task the project list doesnt refresh 7/19/22
-//TODO line 209 taskList only appears on 2nd click
-//TODO line 282 comment
-//TODO create a delete button for tasks and projects
+
+//when creating a new project after populating another with tasks the new project becomes wrongly associated with the previous
+//projects task list, associatedTasks line 138 might be the cause
