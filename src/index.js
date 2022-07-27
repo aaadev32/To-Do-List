@@ -136,7 +136,7 @@ const projectsTasks = (() => {
         //builds task list from taskArray
         let associatedTasks = arraysAndObjects.fetchProjectTasks(arraysAndObjects.selectedProject);
         //associatedTasks will create an array of task objects that have the corresponding index of their respective projects
-        console.log(`associated task array${associatedTasks}`);
+        console.log(`associated task array length ${associatedTasks.length}`);
 
         for (let i = 0; i < associatedTasks.length; i++) {
 
@@ -150,13 +150,13 @@ const projectsTasks = (() => {
 
             domMods.ImgIdClassAppend(`delete-tasks-${i}`, `delete-task`, trash, `project-task-expansion-${i}`);
             document.getElementById(`delete-tasks-${i}`).onclick = function () {
-                let expandedTaskListClass = document.getElementsByClassName(`expanded-task-list`)
+
                 //this loop finds the associatedTasks in the taskArray and deletes them when the corresponding delete-tasks function is triggered
                 for (let j = 0; j < arraysAndObjects.taskArray.length; j++) {
                     //the below line should delete the taskArray object when the associatedTask[i]'s delete-task function is clicked
                     if (arraysAndObjects.taskArray[j] == associatedTasks[i]) {
                         console.log('task deleted!' + `${console.log(arraysAndObjects.taskArray)}`);
-                        arraysAndObjects.deleteindex(arraysAndObjects.taskArray, i);
+                        arraysAndObjects.deleteindex(arraysAndObjects.taskArray, j);
                     }
                 }
                 projects();
@@ -186,7 +186,6 @@ const projectsTasks = (() => {
 
         const temp = new arraysAndObjects.task(formTitle, formDescription, formPriority, formNotes, formDue, selectedProject);
         arraysAndObjects.taskArray.push(temp);
-        console.log(arraysAndObjects.taskArray);
     }
 
     const projectList = () => {
@@ -255,7 +254,9 @@ const projectsTasks = (() => {
         console.log(arraysAndObjects.projectArray)
 
         document.getElementById('project-form').style.display = 'none';
+        projects();
         projectList();
+        taskList();
 
     }
 
@@ -290,7 +291,6 @@ const projectsTasks = (() => {
         document.getElementById('project-submit-button').onclick = function () {
 
             submitProject();
-            projectList();
 
             /* might bring this line back if i move the new project button from the sidebar
             document.getElementById('project-button-container').style.display = 'flex';
