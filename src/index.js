@@ -133,10 +133,10 @@ const domMods = (() => {
 const projectsTasks = (() => {
 
     const taskList = () => {
-        //builds task list from taskArray
+
         let associatedTasks = arraysAndObjects.fetchProjectTasks(arraysAndObjects.selectedProject);
         //associatedTasks will create an array of task objects that have the corresponding index of their respective projects
-        console.log(`associated task array length ${associatedTasks.length}`);
+        console.log(associatedTasks);
 
         for (let i = 0; i < associatedTasks.length; i++) {
 
@@ -150,13 +150,12 @@ const projectsTasks = (() => {
 
             domMods.ImgIdClassAppend(`delete-tasks-${i}`, `delete-task`, trash, `project-task-expansion-${i}`);
             document.getElementById(`delete-tasks-${i}`).onclick = function () {
-
                 //this loop finds the associatedTasks in the taskArray and deletes them when the corresponding delete-tasks function is triggered
                 for (let j = 0; j < arraysAndObjects.taskArray.length; j++) {
                     //the below line should delete the taskArray object when the associatedTask[i]'s delete-task function is clicked
                     if (arraysAndObjects.taskArray[j] == associatedTasks[i]) {
-                        console.log('task deleted!' + `${console.log(arraysAndObjects.taskArray)}`);
                         arraysAndObjects.deleteindex(arraysAndObjects.taskArray, j);
+                        console.log('task deleted!' + `${console.log(arraysAndObjects.taskArray)}`);
                     }
                 }
                 projects();
@@ -167,11 +166,11 @@ const projectsTasks = (() => {
             document.getElementById(`project-list-${arraysAndObjects.selectedProject}`).style.backgroundColor = 'white';
 
             document.getElementById(`task-${i}`).textContent = `${i + 1}.`
-            document.getElementById(`project-expansion-title-${i}`).textContent = arraysAndObjects.taskArray[i].title;
-            document.getElementById(`project-expansion-description-${i}`).textContent = arraysAndObjects.taskArray[i].description;
-            document.getElementById(`project-expansion-notes-${i}`).textContent = arraysAndObjects.taskArray[i].notes;
-            document.getElementById(`project-expansion-priority-${i}`).textContent = arraysAndObjects.taskArray[i].priority;
-            document.getElementById(`project-expansion-due-${i}`).textContent = arraysAndObjects.taskArray[i].due;
+            document.getElementById(`project-expansion-title-${i}`).textContent = associatedTasks[i].title;
+            document.getElementById(`project-expansion-description-${i}`).textContent = associatedTasks[i].description;
+            document.getElementById(`project-expansion-notes-${i}`).textContent = associatedTasks[i].notes;
+            document.getElementById(`project-expansion-priority-${i}`).textContent = associatedTasks[i].priority;
+            document.getElementById(`project-expansion-due-${i}`).textContent = associatedTasks[i].due;
         }
 
     }
@@ -229,7 +228,6 @@ const projectsTasks = (() => {
             document.getElementById(`expand-tasks-${i}`).onclick = function () {
                 //cleans the previous list when selecting another projects task list
                 domMods.removeChildren(document.getElementById('selected-project-container'));
-
                 arraysAndObjects.selectedProject = i;
                 projects();
                 projectList();
@@ -243,14 +241,16 @@ const projectsTasks = (() => {
 
     const submitProject = () => {
         //the 2 below lines keep project tasks from getting mixed when more than 1 project is created
-        let i = arraysAndObjects.projectArray.length;
-        arraysAndObjects.selectedProject = i;
+
         const projectTitle = document.getElementById(`project-title`).value;
         const projectNotes = document.getElementById(`project-notes`).value;
         const projectDueDate = document.getElementById(`project-due-date`).value;
         let newProject = new arraysAndObjects.project(projectTitle, projectNotes, projectDueDate)
 
         arraysAndObjects.projectArray.push(newProject);
+        let i = arraysAndObjects.projectArray.length;
+        arraysAndObjects.selectedProject = i;
+
         console.log(arraysAndObjects.projectArray)
 
         document.getElementById('project-form').style.display = 'none';
@@ -343,5 +343,6 @@ const footer = () => {
 header(), sidebar(), content(), footer(), projectsTasks.projects();
 
 
-//when creating a new project after populating another with tasks the new project becomes wrongly associated with the previous
-//projects task list, associatedTasks line 138 might be the cause
+//when trying to populate a 2nd project the added tasks are equal to that of the first associatedTasks array 
+//until the length of the first array is exceeded then subsequent submissions will match that initial and further consecutive
+//task submissions
