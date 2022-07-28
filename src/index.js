@@ -6,26 +6,7 @@ import trash from './icons/delete.svg';
 
 
 const arraysAndObjects = (() => {
-
-
-
-    let testObj = {
-        title: 'title test',
-        description: 'description test',
-        priority: 'priority test',
-        notes: 'notes test',
-        dueDate: 'due date test',
-    }
-
-    let projectTest = {
-        title: 'title',
-        notes: 'notes',
-        due: 'due date',
-    }
     //contains all project object
-    let taskArray = [];
-    let projectArray = [];
-    let selectedProject = 0;
 
     class task {
 
@@ -69,8 +50,13 @@ const arraysAndObjects = (() => {
 
     const deleteindex = (array, index) => {
         array.splice(index, 1);
-        return 1;
     }
+
+    let defaultProject = new project('My Project', 'My Notes', 'Due this sunday', 0);
+    let taskArray = [];
+    let projectArray = [defaultProject];
+    let selectedProject = 0;
+
 
 
     return { task, project, newArray, projectArray, taskArray, deleteindex, fetchProjectTasks };
@@ -137,10 +123,10 @@ const projectsTasks = (() => {
         let associatedTasks = arraysAndObjects.fetchProjectTasks(arraysAndObjects.selectedProject);
         //associatedTasks will create an array of task objects that have the corresponding index of their respective projects
         console.log(associatedTasks);
-
+        domMods.createElementAppend('div', 'task-list-container', 'content');
         for (let i = 0; i < associatedTasks.length; i++) {
 
-            domMods.createIdClassElementAppend('div', `project-task-expansion-${i}`, `selected-project-container`, 'expanded-task-list');
+            domMods.createIdClassElementAppend('div', `project-task-expansion-${i}`, `task-list-container`, 'expanded-task-list');
             domMods.createElementAppend('div', `task-${i}`, `project-task-expansion-${i}`);
             domMods.createElementAppend('div', `project-expansion-title-${i}`, `project-task-expansion-${i}`);
             domMods.createElementAppend('div', `project-expansion-description-${i}`, `project-task-expansion-${i}`);
@@ -155,7 +141,6 @@ const projectsTasks = (() => {
                     //the below line should delete the taskArray object when the associatedTask[i]'s delete-task function is clicked
                     if (arraysAndObjects.taskArray[j] == associatedTasks[i]) {
                         arraysAndObjects.deleteindex(arraysAndObjects.taskArray, j);
-                        console.log('task deleted!' + `${console.log(arraysAndObjects.taskArray)}`);
                     }
                 }
                 projects();
@@ -207,9 +192,13 @@ const projectsTasks = (() => {
             domMods.ImgIdClassAppend(`add-tasks-${i}`, 'project-list-items', showTasks, `project-list-${i}`);
             domMods.ImgIdClassAppend(`expand-tasks-${i}`, `project-list-items`, addTasks, `project-list-${i}`);
 
+
             domMods.createIdClassElementAppend('div', `project-title-${i}`, `project-list-${i}`, 'project-list-items');
             domMods.createIdClassElementAppend('div', `project-notes-${i}`, `project-list-${i}`, 'project-list-items');
             domMods.createIdClassElementAppend('div', `project-due-${i}`, `project-list-${i}`, 'project-list-items');
+
+            domMods.ImgIdClassAppend(`delete-project-${i}`, `project-list-items`, trash, `project-list-${i}`);
+
 
             document.getElementById(`project-title-${i}`).textContent = arraysAndObjects.projectArray[i].title;
             document.getElementById(`project-notes-${i}`).textContent = arraysAndObjects.projectArray[i].notes;
@@ -233,6 +222,30 @@ const projectsTasks = (() => {
                 projectList();
                 taskList();
                 console.log(arraysAndObjects.selectedProject);
+            }
+
+            document.getElementById(`delete-project-${i}`).onclick = function () {
+                arraysAndObjects.selectedProject = i;
+                let associatedTasks = arraysAndObjects.fetchProjectTasks(arraysAndObjects.selectedProject)
+
+                //this loop should delete the project
+                for (let j = 0; j < arraysAndObjects.projectArray.length; j++) {
+                    if (arraysAndObjects.selectedProject == arraysAndObjects.projectArray[j].projectIndex) {
+
+                        arraysAndObjects.deleteindex(arraysAndObjects.projectArray, j);
+                    }
+                }
+                //this loop should delete all of the projects tasks
+                for (let k = 0; k < arraysAndObjects.taskArray.length; k++) {
+                    for (let l = 0; l < associatedTasks.length; l++) {
+                        if (arraysAndObjects.taskArray[k] == associatedTasks[l]) {
+                            arraysAndObjects.deleteindex(arraysAndObjects.taskArray, k);
+                        }
+                    }
+                }
+                console.log(arraysAndObjects.projectArray);
+                projects();
+                projectList();
             }
 
         }
@@ -264,8 +277,7 @@ const projectsTasks = (() => {
         let projectListClass = document.getElementsByClassName('project-list-items');
 
         domMods.clearContent();
-        domMods.createElementAppend('div', 'project-container', 'content');
-        domMods.createElementAppend('div', 'project-list-container', 'project-container');
+        domMods.createElementAppend('div', 'project-list-container', 'content');
 
         document.getElementById('project-button-container').textContent = 'New Project';
         domMods.createElementAppend('button', 'add-project-button', 'project-button-container');
@@ -340,9 +352,7 @@ const footer = () => {
     document.getElementById('footer-stuff').textContent = 'footer stuff'
 }
 
-header(), sidebar(), content(), footer(), projectsTasks.projects();
+header(), sidebar(), content(), footer(), projectsTasks.projects(), projectsTasks.projectList(), projectsTasks.taskList;
 
 
-//when trying to populate a 2nd project the added tasks are equal to that of the first associatedTasks array 
-//until the length of the first array is exceeded then subsequent submissions will match that initial and further consecutive
-//task submissions
+//work on the delete-projects onclick function line 227

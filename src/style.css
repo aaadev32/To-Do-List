@@ -73,13 +73,10 @@ body {
     display: none;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
     width: 75%;
 }
 
-#project-container {
-    display: flex;
-    flex-direction: column;
-}
 
 #add-project-button {
     display: flex;
@@ -98,13 +95,11 @@ body {
     align-items: center;
 }
 
-
-
-
 #show-tasks-png {
     height: 16px;
     width: 16px;
 }
+
 
 .project-lists {
     display: flex;
