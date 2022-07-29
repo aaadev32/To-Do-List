@@ -27,7 +27,7 @@ const arraysAndObjects = (() => {
             this.title = title;
             this.notes = notes;
             this.due = due;
-            this.projectIndex = projectIndex
+            this.projectIndex = projectIndex;
         }
     }
 
@@ -48,10 +48,6 @@ const arraysAndObjects = (() => {
         return name;
     }
 
-    const deleteindex = (array, index) => {
-        array.splice(index, 1);
-    }
-
     let defaultProject = new project('My Project', 'My Notes', 'Due this sunday', 0);
     let taskArray = [];
     let projectArray = [defaultProject];
@@ -59,7 +55,7 @@ const arraysAndObjects = (() => {
 
 
 
-    return { task, project, newArray, projectArray, taskArray, deleteindex, fetchProjectTasks };
+    return { task, project, newArray, projectArray, taskArray, fetchProjectTasks, selectedProject };
 })();
 
 const domMods = (() => {
@@ -122,7 +118,7 @@ const projectsTasks = (() => {
 
         let associatedTasks = arraysAndObjects.fetchProjectTasks(arraysAndObjects.selectedProject);
         //associatedTasks will create an array of task objects that have the corresponding index of their respective projects
-        console.log(associatedTasks);
+        console.log(`associated tasks ${associatedTasks}`);
         domMods.createElementAppend('div', 'task-list-container', 'content');
         for (let i = 0; i < associatedTasks.length; i++) {
 
@@ -140,7 +136,7 @@ const projectsTasks = (() => {
                 for (let j = 0; j < arraysAndObjects.taskArray.length; j++) {
                     //the below line should delete the taskArray object when the associatedTask[i]'s delete-task function is clicked
                     if (arraysAndObjects.taskArray[j] == associatedTasks[i]) {
-                        arraysAndObjects.deleteindex(arraysAndObjects.taskArray, j);
+                        arraysAndObjects.taskArray.splice(j, 1);
                     }
                 }
                 projects();
@@ -226,26 +222,31 @@ const projectsTasks = (() => {
 
             document.getElementById(`delete-project-${i}`).onclick = function () {
                 arraysAndObjects.selectedProject = i;
+                console.log(arraysAndObjects.selectedProject)
+
                 let associatedTasks = arraysAndObjects.fetchProjectTasks(arraysAndObjects.selectedProject)
 
-                //this loop should delete the project
-                for (let j = 0; j < arraysAndObjects.projectArray.length; j++) {
-                    if (arraysAndObjects.selectedProject == arraysAndObjects.projectArray[j].projectIndex) {
-
-                        arraysAndObjects.deleteindex(arraysAndObjects.projectArray, j);
-                    }
-                }
                 //this loop should delete all of the projects tasks
-                for (let k = 0; k < arraysAndObjects.taskArray.length; k++) {
-                    for (let l = 0; l < associatedTasks.length; l++) {
-                        if (arraysAndObjects.taskArray[k] == associatedTasks[l]) {
-                            arraysAndObjects.deleteindex(arraysAndObjects.taskArray, k);
+                for (let j = 0; j < arraysAndObjects.taskArray.length; j++) {
+                    for (let k = 0; k < associatedTasks.length; k++) {
+                        if (arraysAndObjects.taskArray[j].projectIndex == associatedTasks[k].projectIndex) {
+                            arraysAndObjects.taskArray.splice(j, 1);
                         }
                     }
                 }
-                console.log(arraysAndObjects.projectArray);
+                //this loop should delete the project
+                for (let j = 0; j < arraysAndObjects.projectArray.length; j++) {
+                    if (arraysAndObjects.projectArray[j].projectIndex == arraysAndObjects.selectedProject) {
+                        arraysAndObjects.projectArray.splice(j, 1);
+                    }
+                }
+                //this loop refactors each projectIndex in the project array 
+                for (let j = 0; j < arraysAndObjects.projectArray.length; j++) {
+                    arraysAndObjects.projectArray[j].projectIndex = j;
+                }
                 projects();
                 projectList();
+                taskList();
             }
 
         }
@@ -254,17 +255,22 @@ const projectsTasks = (() => {
 
     const submitProject = () => {
         //the 2 below lines keep project tasks from getting mixed when more than 1 project is created
+        let projectArrayLength = arraysAndObjects.projectArray;
 
         const projectTitle = document.getElementById(`project-title`).value;
         const projectNotes = document.getElementById(`project-notes`).value;
         const projectDueDate = document.getElementById(`project-due-date`).value;
-        let newProject = new arraysAndObjects.project(projectTitle, projectNotes, projectDueDate)
+        const projectIndex = projectArrayLength + 1;
+        console.log(projectIndex)
+        let newProject = new arraysAndObjects.project(projectTitle, projectNotes, projectDueDate, projectIndex);
+
+        for (let j = 0; j < arraysAndObjects.projectArray.length; j++) {
+            arraysAndObjects.projectArray[j].projectIndex = j;
+        }
 
         arraysAndObjects.projectArray.push(newProject);
-        let i = arraysAndObjects.projectArray.length;
-        arraysAndObjects.selectedProject = i;
 
-        console.log(arraysAndObjects.projectArray)
+        console.log(newProject.projectIndex)
 
         document.getElementById('project-form').style.display = 'none';
         projects();
@@ -291,9 +297,6 @@ const projectsTasks = (() => {
             projectList();
             document.getElementById('project-form').style.display = 'flex';
 
-            /* might bring this line back if i move the new project button from the sidebar
-            document.getElementById('project-button-container').style.display = 'none';
-            */
             Array.from(projectListClass).forEach(div => {
                 div.style.display = 'none';
             });
@@ -304,9 +307,6 @@ const projectsTasks = (() => {
 
             submitProject();
 
-            /* might bring this line back if i move the new project button from the sidebar
-            document.getElementById('project-button-container').style.display = 'flex';
-            */
             Array.from(projectListClass).forEach(div => {
                 div.style.display = 'flex';
             });
