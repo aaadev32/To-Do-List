@@ -217,32 +217,36 @@ const projectsTasks = (() => {
                 projects();
                 projectList();
                 taskList();
-                console.log(arraysAndObjects.selectedProject);
             }
 
             document.getElementById(`delete-project-${i}`).onclick = function () {
                 arraysAndObjects.selectedProject = i;
-                console.log(arraysAndObjects.selectedProject)
+                console.log(arraysAndObjects.selectedProject);
+                console.log(arraysAndObjects.projectArray);
+                console.log(arraysAndObjects.taskArray);
 
                 let associatedTasks = arraysAndObjects.fetchProjectTasks(arraysAndObjects.selectedProject)
+
+                //deletes project =)
+                arraysAndObjects.projectArray.splice(i, 1);
+                console.log(`project deleted ${arraysAndObjects.projectArray}`)
+
+
 
                 //this loop should delete all of the projects tasks
                 for (let j = 0; j < arraysAndObjects.taskArray.length; j++) {
                     for (let k = 0; k < associatedTasks.length; k++) {
                         if (arraysAndObjects.taskArray[j].projectIndex == associatedTasks[k].projectIndex) {
                             arraysAndObjects.taskArray.splice(j, 1);
+                            console.log(`task deleted ${arraysAndObjects.taskArray}`)
                         }
                     }
                 }
-                //this loop should delete the project
-                for (let j = 0; j < arraysAndObjects.projectArray.length; j++) {
-                    if (arraysAndObjects.projectArray[j].projectIndex == arraysAndObjects.selectedProject) {
-                        arraysAndObjects.projectArray.splice(j, 1);
-                    }
-                }
+
                 //this loop refactors each projectIndex in the project array 
                 for (let j = 0; j < arraysAndObjects.projectArray.length; j++) {
                     arraysAndObjects.projectArray[j].projectIndex = j;
+                    console.log(`refactored project array ${arraysAndObjects.projectArray}`)
                 }
                 projects();
                 projectList();
@@ -295,6 +299,7 @@ const projectsTasks = (() => {
 
             //calling project list refreshes the associated nodes and keeps expanded lists from being persistent through the project form after expanding a list
             projectList();
+            domMods.removeChildren(document.getElementById('task-list-container'));
             document.getElementById('project-form').style.display = 'flex';
 
             Array.from(projectListClass).forEach(div => {
