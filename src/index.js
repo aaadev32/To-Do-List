@@ -166,6 +166,7 @@ const projectsTasks = (() => {
 
         const temp = new arraysAndObjects.task(formTitle, formDescription, formPriority, formNotes, formDue, selectedProject);
         arraysAndObjects.taskArray.push(temp);
+        console.log(`new task`, temp);
     }
 
     const projectList = () => {
@@ -204,7 +205,7 @@ const projectsTasks = (() => {
             document.getElementById(`add-tasks-${i}`).onclick = function () {
 
                 arraysAndObjects.selectedProject = i;
-                console.log(`selected project = ${i}`)
+                console.log(`selected project = ${i}`);
                 domMods.clearContent();
                 document.getElementById('task-form').style.display = 'flex';
             }
@@ -221,51 +222,49 @@ const projectsTasks = (() => {
 
             document.getElementById(`delete-project-${i}`).onclick = function () {
                 arraysAndObjects.selectedProject = i;
-                let deletedProjectIndex = i;
                 console.log(arraysAndObjects.selectedProject);
                 console.log(arraysAndObjects.projectArray);
                 console.log(arraysAndObjects.taskArray);
 
-                let associatedTasks = arraysAndObjects.fetchProjectTasks(arraysAndObjects.selectedProject)
+                let associatedTasks = arraysAndObjects.fetchProjectTasks(arraysAndObjects.selectedProject);
 
                 //deletes project =)
-                console.log(`project deleted ${arraysAndObjects.projectArray[i]}`)
+                console.log(`project deleted `, arraysAndObjects.projectArray[i]);
                 arraysAndObjects.projectArray.splice(i, 1);
+
+                //this loop refactors each projectIndex in the project array
+                for (let j = 0; j < arraysAndObjects.projectArray.length; j++) {
+                    arraysAndObjects.projectArray[j].projectIndex = j;
+                    console.log(`refactored project array`, arraysAndObjects.projectArray)
+
+                    //this loop refactors each projectIndex in the task array subtracting the projectIndex of every projects task after the deleted project by 1
+                    for (let k = 0; k < arraysAndObjects.taskArray.length; k++) {
+                        if (arraysAndObjects.taskArray[k].projectIndex > arraysAndObjects.selectedProject) {
+                            let projectIndexInt = arraysAndObjects.taskArray[k].projectIndex;
+                            //every index after the deleted index has their index value reduced by 1 effectively keeping the proper task association between projects
+                            arraysAndObjects.taskArray[k].projectIndex = projectIndexInt - 1
+                        }
+                    }
+
+                }
 
 
 
                 //this loop should delete all of the projects tasks
                 for (let j = 0; j < arraysAndObjects.taskArray.length; j++) {
                     for (let k = 0; k < associatedTasks.length; k++) {
-                        if (arraysAndObjects.taskArray[j].projectIndex == associatedTasks[k].projectIndex) {
-                            console.log(`task deleted ${arraysAndObjects.taskArray[j]}`)
+                        console.log(arraysAndObjects.taskArray[j]);
+
+                        if (associatedTasks[k].projectIndex == arraysAndObjects.taskArray[j].projectIndex) {
 
                             arraysAndObjects.taskArray.splice(j, 1);
                         }
                     }
                 }
-
-                //this loop refactors each projectIndex in the project array
-                for (let j = 0; j < arraysAndObjects.projectArray.length; j++) {
-                    arraysAndObjects.projectArray[j].projectIndex = j;
-                    console.log(`refactored project array ${arraysAndObjects.projectArray}`)
-
-                    //this loop refactors each projectIndex in the task array subtracting the projectIndex of every projects task after the deleted project by 1
-                    for (let k = 0; k < arraysAndObjects.taskArray.length; k++) {
-                        if (arraysAndObjects.taskArray[k].projectIndex > deletedProjectIndex ){
-                            let projectIndexInt = arraysAndObjects.taskArray[k].projectIndex;
-                            //every index after the deleted index has their index value reduced by 1 effectively keeping the proper association between projects
-                            arraysAndObjects.taskArray[k].projectIndex = projectIndexInt - 1
-                        }
-                }
-
-                }
-
                 projects();
                 projectList();
                 taskList();
             }
-
         }
     }
 
@@ -278,7 +277,6 @@ const projectsTasks = (() => {
         const projectNotes = document.getElementById(`project-notes`).value;
         const projectDueDate = document.getElementById(`project-due-date`).value;
         const projectIndex = arraysAndObjects.projectArray.length;
-        console.log(projectIndex)
         let newProject = new arraysAndObjects.project(projectTitle, projectNotes, projectDueDate, projectIndex);
 
         for (let j = 0; j < arraysAndObjects.projectArray.length; j++) {
@@ -286,8 +284,6 @@ const projectsTasks = (() => {
         }
 
         arraysAndObjects.projectArray.push(newProject);
-
-        console.log(newProject.projectIndex)
 
         document.getElementById('project-form').style.display = 'none';
         projects();
@@ -378,4 +374,6 @@ header(), sidebar(), content(), footer(), projectsTasks.projects(), projectsTask
 
 
 //work on the delete-projects onclick function line 227
-//Uncaught TypeError: arraysAndObjects.taskArray[j] is undefined when adding several tasks to each project
+//Uncaught TypeError: arraysAndObjects.taskArray[j] is undefined when adding several tasks to each project line 240
+//arraysAndObjects.taskArray[j] is likely returning null
+//also make sure statements are closed
