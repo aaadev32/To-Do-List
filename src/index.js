@@ -251,13 +251,13 @@ const projectsTasks = (() => {
 
 
                 //this loop should delete all of the projects tasks
-                for (let j = 0; j < arraysAndObjects.taskArray.length; j++) {
-                    for (let k = 0; k < associatedTasks.length; k++) {
-                        console.log(arraysAndObjects.taskArray[j]);
+                for (let j = 0; j < associatedTasks.length; j++) {
+                    for (let k = 0; k < arraysAndObjects.taskArray.length; k++) {
+                        console.log(arraysAndObjects.taskArray[k]);
 
-                        if (associatedTasks[k].projectIndex == arraysAndObjects.taskArray[j].projectIndex) {
+                        if (associatedTasks[j].projectIndex == arraysAndObjects.taskArray[k].projectIndex) {
 
-                            arraysAndObjects.taskArray.splice(j, 1);
+                            arraysAndObjects.taskArray.splice(k, 1);
                         }
                     }
                 }
@@ -375,5 +375,4 @@ header(), sidebar(), content(), footer(), projectsTasks.projects(), projectsTask
 
 //work on the delete-projects onclick function line 227
 //Uncaught TypeError: arraysAndObjects.taskArray[j] is undefined when adding several tasks to each project line 240
-//arraysAndObjects.taskArray[j] is likely returning null
 //also make sure statements are closed
