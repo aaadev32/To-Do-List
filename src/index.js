@@ -298,16 +298,24 @@ const projectsTasks = (() => {
         domMods.clearContent();
         domMods.createElementAppend('div', 'project-list-container', 'content');
 
-        document.getElementById('project-button-container').textContent = 'New Project';
-        domMods.createElementAppend('button', 'add-project-button', 'project-button-container');
+        document.getElementById('project-button-tab').textContent = 'New Project';
+        domMods.createElementAppend('button', 'add-project-button', 'project-button-tab');
 
         domMods.ImgAppend('plus-symbol', plus, 'add-project-button');
+
+        document.getElementById('project-tab').onclick = function () {
+            projects();
+            projectList();
+            taskList();
+        }
 
 
         document.getElementById('add-project-button').onclick = function () {
 
             //calling project list refreshes the associated nodes and keeps expanded lists from being persistent through the project form after expanding a list
+            projects();
             projectList();
+            taskList();
             //below if statement made redundant by the above (i think) but keeping commented in case the above causes issues
 
             if (document.getElementById('task-list-container') != null) {
@@ -352,17 +360,45 @@ const sidebar = () => {
     domMods.createElementAppend('div', 'home-tab', 'sidebar');
     domMods.createElementAppend('div', 'tasks-tab', 'sidebar');
     domMods.createElementAppend('div', 'project-tab', 'sidebar');
-    domMods.createElementAppend('div', 'project-button-container', 'sidebar');
-
-    const sidebarHome = document.getElementById('home-tab');
-    const sidebarTasks = document.getElementById('tasks-tab');
+    domMods.createElementAppend('div', 'project-button-tab', 'sidebar');
 
     document.getElementById('home-tab').textContent = 'Home';
     document.getElementById('project-tab').textContent = 'Projects';
 }
 
-const content = () => {
-    //make this display the date and time on page open and home button click
+const home = () => {
+    document.getElementById('home-tab').onclick = function () {
+        domMods.clearContent();
+        //TODO write displays live time and date with the current amount of projects and tasks left to complete in the content div
+
+        domMods.createElementAppend('div', 'date-info-container', 'content');
+        domMods.createElementAppend('div', 'date-time-container', 'date-info-container')
+        domMods.createElementAppend('div', 'home-time', 'date-time-container');
+        domMods.createElementAppend('div', 'home-date', 'date-time-container');
+        domMods.createElementAppend('div', 'home-counter', 'date-info-container');
+
+        function getTime() {
+            let time = new Date().toLocaleTimeString();
+            let date = new Date().toLocaleDateString();
+            let totalTasks = arraysAndObjects.taskArray.length;
+            let totalProjects = arraysAndObjects.projectArray.length;
+
+            if (document.getElementById('home-time') == null) {
+                clearInterval(timerInterval);
+                //silences null elementId error
+                return 1;
+            }
+
+            document.getElementById('home-time').textContent = time;
+            document.getElementById('home-date').textContent = date;
+            document.getElementById('home-counter').textContent = `you have ${totalTasks} tasks within ${totalProjects} different projects to do`;
+
+
+        }
+
+        let timerInterval = setInterval(getTime, 1000)
+
+    }
 }
 
 const footer = () => {
@@ -370,9 +406,8 @@ const footer = () => {
     document.getElementById('footer-stuff').textContent = 'footer stuff'
 }
 
-header(), sidebar(), content(), footer(), projectsTasks.projects(), projectsTasks.projectList(), projectsTasks.taskList;
+header(), sidebar(), footer(), home(), projectsTasks.projects(), projectsTasks.projectList(), projectsTasks.taskList;
 
 
-//work on the delete-projects onclick function line 227
-//Uncaught TypeError: arraysAndObjects.taskArray[j] is undefined when adding several tasks to each project line 240
-//also make sure statements are closed
+//work on the home page
+//it should include a live display of the date and time as well as displaying to the user how many projects and tasks they have 

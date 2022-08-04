@@ -77,6 +77,19 @@ body {
     width: 75%;
 }
 
+#date-info-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+#date-time-container {
+    display: flex;
+    justify-content: space-around;
+    font-size: x-large;
+    margin-bottom: 50px;
+
+}
 
 #add-project-button {
     display: flex;
@@ -90,10 +103,11 @@ body {
     width: 18px;
 }
 
-#project-button-container {
+#project-button-tab {
     display: flex;
     align-items: center;
 }
+
 
 #show-tasks-png {
     height: 16px;
