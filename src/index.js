@@ -120,14 +120,18 @@ const projectsTasks = (() => {
         //associatedTasks will create an array of task objects that have the corresponding index of their respective projects
         domMods.createElementAppend('div', 'task-list-container', 'content');
         for (let i = 0; i < associatedTasks.length; i++) {
-
             domMods.createIdClassElementAppend('div', `project-task-expansion-${i}`, `task-list-container`, 'expanded-task-list');
-            domMods.createElementAppend('div', `task-${i}`, `project-task-expansion-${i}`);
-            domMods.createElementAppend('div', `project-expansion-title-${i}`, `project-task-expansion-${i}`);
-            domMods.createElementAppend('div', `project-expansion-description-${i}`, `project-task-expansion-${i}`);
-            domMods.createElementAppend('div', `project-expansion-notes-${i}`, `project-task-expansion-${i}`);
-            domMods.createElementAppend('div', `project-expansion-priority-${i}`, `project-task-expansion-${i}`);
-            domMods.createElementAppend('div', `project-expansion-due-${i}`, `project-task-expansion-${i}`);
+
+            domMods.createIdClassElementAppend('div', `title-description-div-${i}`, `project-task-expansion-${i}`, 'task-list-divs')
+            domMods.createIdClassElementAppend('div', `notes-priority-div-${i}`, `project-task-expansion-${i}`, 'task-list-divs')
+            domMods.createIdClassElementAppend('div', `due-div-${i}`, `project-task-expansion-${i}`, 'task-list-divs')
+
+
+            domMods.createIdClassElementAppend('div', `project-expansion-title-${i}`, `title-description-div-${i}`, 'task-list-items');
+            domMods.createIdClassElementAppend('div', `project-expansion-description-${i}`, `title-description-div-${i}`, 'task-list-items');
+            domMods.createIdClassElementAppend('div', `project-expansion-notes-${i}`, `notes-priority-div-${i}`, 'task-list-items');
+            domMods.createIdClassElementAppend('div', `project-expansion-priority-${i}`, `notes-priority-div-${i}`, 'task-list-items');
+            domMods.createIdClassElementAppend('div', `project-expansion-due-${i}`, `due-div-${i}`, 'task-list-items');
 
             domMods.ImgIdClassAppend(`delete-tasks-${i}`, `delete-task`, trash, `project-task-expansion-${i}`);
             document.getElementById(`delete-tasks-${i}`).onclick = function () {
@@ -146,7 +150,6 @@ const projectsTasks = (() => {
 
             document.getElementById(`project-list-${arraysAndObjects.selectedProject}`).style.backgroundColor = 'white';
 
-            document.getElementById(`task-${i}`).textContent = `${i + 1}.`
             document.getElementById(`project-expansion-title-${i}`).textContent = associatedTasks[i].title;
             document.getElementById(`project-expansion-description-${i}`).textContent = associatedTasks[i].description;
             document.getElementById(`project-expansion-notes-${i}`).textContent = associatedTasks[i].notes;
@@ -186,15 +189,15 @@ const projectsTasks = (() => {
         //creates all saved projects and their associated tasks
         for (let i = 0; i < arraysAndObjects.projectArray.length; i++) {
             domMods.createIdClassElementAppend('div', `project-list-${i}`, 'project-list-container', 'project-lists');
-            domMods.ImgIdClassAppend(`add-tasks-${i}`, 'project-list-items', showTasks, `project-list-${i}`);
-            domMods.ImgIdClassAppend(`expand-tasks-${i}`, `project-list-items`, addTasks, `project-list-${i}`);
+            domMods.ImgIdClassAppend(`add-tasks-${i}`, 'project-list-icons', showTasks, `project-list-${i}`);
+            domMods.ImgIdClassAppend(`expand-tasks-${i}`, `project-list-icons`, addTasks, `project-list-${i}`);
 
 
             domMods.createIdClassElementAppend('div', `project-title-${i}`, `project-list-${i}`, 'project-list-items');
             domMods.createIdClassElementAppend('div', `project-notes-${i}`, `project-list-${i}`, 'project-list-items');
             domMods.createIdClassElementAppend('div', `project-due-${i}`, `project-list-${i}`, 'project-list-items');
 
-            domMods.ImgIdClassAppend(`delete-project-${i}`, `project-list-items`, trash, `project-list-${i}`);
+            domMods.ImgIdClassAppend(`delete-project-${i}`, `project-list-icons`, trash, `project-list-${i}`);
 
 
             document.getElementById(`project-title-${i}`).textContent = arraysAndObjects.projectArray[i].title;
@@ -293,7 +296,8 @@ const projectsTasks = (() => {
     }
 
     const projects = () => {
-        let projectListClass = document.getElementsByClassName('project-list-items');
+        let projectListItems = document.getElementsByClassName('project-list-items');
+        let projectListIcons = document.getElementsByClassName('project-list-icons')
 
         domMods.clearContent();
         domMods.createElementAppend('div', 'project-list-container', 'content');
@@ -323,7 +327,10 @@ const projectsTasks = (() => {
             }
             document.getElementById('project-form').style.display = 'flex';
 
-            Array.from(projectListClass).forEach(div => {
+            Array.from(projectListItems).forEach(div => {
+                div.style.display = 'none';
+            });
+            Array.from(projectListIcons).forEach(div => {
                 div.style.display = 'none';
             });
 
@@ -333,7 +340,11 @@ const projectsTasks = (() => {
 
             submitProject();
 
-            Array.from(projectListClass).forEach(div => {
+            Array.from(projectListItems).forEach(div => {
+                div.style.display = 'flex';
+            });
+
+            Array.from(projectListIcons).forEach(div => {
                 div.style.display = 'flex';
             });
 
@@ -356,58 +367,58 @@ const sidebar = () => {
     const contentDiv = document.getElementById('content');
 
     document.getElementById('sidebar').style.gridArea = 'sb';
-
-    domMods.createElementAppend('div', 'home-tab', 'sidebar');
-    domMods.createElementAppend('div', 'tasks-tab', 'sidebar');
-    domMods.createElementAppend('div', 'project-tab', 'sidebar');
-    domMods.createElementAppend('div', 'project-button-tab', 'sidebar');
+    domMods.createIdClassElementAppend('div', 'home-tab', 'sidebar', 'sidebar-tabs');
+    domMods.createIdClassElementAppend('div', 'project-tab', 'sidebar', 'sidebar-tabs');
+    domMods.createIdClassElementAppend('div', 'project-button-tab', 'sidebar', 'sidebar-tabs');
 
     document.getElementById('home-tab').textContent = 'Home';
     document.getElementById('project-tab').textContent = 'Projects';
 }
 
 const home = () => {
-    document.getElementById('home-tab').onclick = function () {
-        domMods.clearContent();
-        //TODO write displays live time and date with the current amount of projects and tasks left to complete in the content div
 
-        domMods.createElementAppend('div', 'date-info-container', 'content');
-        domMods.createElementAppend('div', 'date-time-container', 'date-info-container')
-        domMods.createElementAppend('div', 'home-time', 'date-time-container');
-        domMods.createElementAppend('div', 'home-date', 'date-time-container');
-        domMods.createElementAppend('div', 'home-counter', 'date-info-container');
+    domMods.clearContent();
+    //TODO write displays live time and date with the current amount of projects and tasks left to complete in the content div
 
-        function getTime() {
-            let time = new Date().toLocaleTimeString();
-            let date = new Date().toLocaleDateString();
-            let totalTasks = arraysAndObjects.taskArray.length;
-            let totalProjects = arraysAndObjects.projectArray.length;
+    domMods.createElementAppend('div', 'date-info-container', 'content');
+    domMods.createElementAppend('div', 'date-time-container', 'date-info-container')
+    domMods.createElementAppend('div', 'home-time', 'date-time-container');
+    domMods.createElementAppend('div', 'home-date', 'date-time-container');
+    domMods.createElementAppend('div', 'home-counter', 'date-info-container');
 
-            if (document.getElementById('home-time') == null) {
-                clearInterval(timerInterval);
-                //silences null elementId error
-                return 1;
-            }
+    function getTime() {
+        let time = new Date().toLocaleTimeString();
+        let date = new Date().toLocaleDateString();
+        let totalTasks = arraysAndObjects.taskArray.length;
+        let totalProjects = arraysAndObjects.projectArray.length;
 
-            document.getElementById('home-time').textContent = time;
-            document.getElementById('home-date').textContent = date;
-            document.getElementById('home-counter').textContent = `you have ${totalTasks} tasks within ${totalProjects} different projects to do`;
-
-
+        if (document.getElementById('home-time') == null) {
+            clearInterval(timerInterval);
+            //silences null elementId error
+            return 1;
         }
 
-        let timerInterval = setInterval(getTime, 1000)
+        document.getElementById('home-time').textContent = time;
+        document.getElementById('home-date').textContent = date;
+        document.getElementById('home-counter').textContent = `you have ${totalTasks} tasks within ${totalProjects} different projects to do`;
 
+
+    }
+
+    let timerInterval = setInterval(getTime, 1000)
+
+    document.getElementById('home-tab').onclick = function () {
+        home();
     }
 }
 
 const footer = () => {
-    domMods.createElementAppend('div', 'footer-stuff', 'footer')
-    document.getElementById('footer-stuff').textContent = 'footer stuff'
+    domMods.createElementAppend('a', 'footer-content', 'footer')
+    document.getElementById('footer-content').textContent = 'https://github.com/aaadev32';
+    document.getElementById('footer-content').title = 'https://github.com/aaadev32';
+    document.getElementById('footer-content').href = 'https://github.com/aaadev32';
+    console.log(document.getElementById('footer-content'))
+
 }
 
-header(), sidebar(), footer(), home(), projectsTasks.projects(), projectsTasks.projectList(), projectsTasks.taskList;
-
-
-//work on the home page
-//it should include a live display of the date and time as well as displaying to the user how many projects and tasks they have 
+header(), sidebar(), footer(), projectsTasks.projects(), projectsTasks.projectList(), projectsTasks.taskList, home();
