@@ -43,11 +43,14 @@ const arraysAndObjects = (() => {
         return fetchedTasks;
     }
 
-    const newArray = (name) => {
-        name = [];
-        return name;
+    const getStorage = (key) => {
+        JSON.parse(localStorage.getItem(key))
     }
 
+    const setStorage = (key, value) => {
+        localStorage.setItem(key, JSON.stringify(value));
+    }
+    
     let defaultProject = new project('My Project', 'My Notes', 'Due this sunday', 0);
     let taskArray = [];
     let projectArray = [defaultProject];
@@ -55,7 +58,7 @@ const arraysAndObjects = (() => {
 
 
 
-    return { task, project, newArray, projectArray, taskArray, fetchProjectTasks, selectedProject };
+    return { task, project, projectArray, taskArray, fetchProjectTasks, selectedProject, getStorage, setStorage };
 })();
 
 const domMods = (() => {
@@ -115,10 +118,10 @@ const domMods = (() => {
 const projectsTasks = (() => {
 
     const taskList = () => {
-
-        let associatedTasks = arraysAndObjects.fetchProjectTasks(arraysAndObjects.selectedProject);
         //associatedTasks will create an array of task objects that have the corresponding index of their respective projects
+        let associatedTasks = arraysAndObjects.fetchProjectTasks(arraysAndObjects.selectedProject);
         domMods.createElementAppend('div', 'task-list-container', 'content');
+
         for (let i = 0; i < associatedTasks.length; i++) {
             domMods.createIdClassElementAppend('div', `project-task-expansion-${i}`, `task-list-container`, 'expanded-task-list');
 
@@ -135,7 +138,6 @@ const projectsTasks = (() => {
 
             domMods.ImgIdClassAppend(`delete-tasks-${i}`, `delete-task`, trash, `project-task-expansion-${i}`);
             document.getElementById(`delete-tasks-${i}`).onclick = function () {
-                arraysAndObjects.selectedProject = i;
                 //this loop finds the associatedTasks in the taskArray and deletes them when the corresponding delete-tasks function is triggered
                 for (let j = 0; j < arraysAndObjects.taskArray.length; j++) {
                     //the below line should delete the taskArray object when the associatedTask[i]'s delete-task function is clicked
@@ -206,7 +208,6 @@ const projectsTasks = (() => {
 
             //opens new task form
             document.getElementById(`add-tasks-${i}`).onclick = function () {
-
                 arraysAndObjects.selectedProject = i;
                 console.log(`selected project = ${i}`);
                 domMods.clearContent();
@@ -320,8 +321,6 @@ const projectsTasks = (() => {
             projects();
             projectList();
             taskList();
-            //below if statement made redundant by the above (i think) but keeping commented in case the above causes issues
-
             if (document.getElementById('task-list-container') != null) {
                 domMods.removeChildren(document.getElementById('task-list-container'));
             }
@@ -422,3 +421,5 @@ const footer = () => {
 }
 
 header(), sidebar(), footer(), projectsTasks.projects(), projectsTasks.projectList(), projectsTasks.taskList, home();
+
+//deleting tasks sometimes deselects the project and hiding the task list

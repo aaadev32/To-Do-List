@@ -2,6 +2,7 @@ html {
     height: 100%;
     overflow: auto;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    background-color: black;
 }
 
 body {
@@ -19,6 +20,7 @@ body {
     width: 100%;
     height: 50px;
     top: 0;
+    border-top: 4px solid black;
     border-bottom: 4px solid black;
 }
 
@@ -94,6 +96,10 @@ body {
     background-color: white;
 }
 
+#date-info-container > * {
+    margin: 15px;
+}
+
 #date-time-container {
     display: flex;
     justify-content: space-around;
@@ -109,6 +115,7 @@ body {
 
 #home-counter {
     align-self: center;
+    font-weight: bold;
 }
 
 #project-tab {
@@ -154,6 +161,7 @@ body {
 }
 
 .project-list-items {
+    overflow: scroll;
     height: 20px;
     width: 120px;
 }
@@ -202,12 +210,21 @@ body {
 }
 
 #footer {
+    display: flex;
+    justify-content: flex-end;
     color: white;
     background-color: royalblue;
     width: 100%;
     height: 20px;
+    border-top: 4px solid black;
+    border-bottom: 4px solid black;
 }
 
 #footer>a {
     color: white;
+    margin-right: 15px;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: large;
+    font-weight: bold;
+    text-decoration: none;
 }
