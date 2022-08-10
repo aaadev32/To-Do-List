@@ -6,8 +6,6 @@ import trash from './icons/delete.svg';
 
 
 const arraysAndObjects = (() => {
-    //contains all project object
-
     class task {
 
         constructor(title, description, priority, notes, due, projectIndex) {
@@ -38,27 +36,28 @@ const arraysAndObjects = (() => {
             if (arraysAndObjects.taskArray[i].projectIndex == index) {
                 fetchedTasks.push(arraysAndObjects.taskArray[i]);
             }
-            //fetch tasks
         }
         return fetchedTasks;
     }
 
-    const getStorage = (key) => {
-        JSON.parse(localStorage.getItem(key))
+    const setData = () => {
+        localStorage.setItem('taskArray', JSON.stringify(arraysAndObjects.taskArray));
+        localStorage.setItem('projectArray', JSON.stringify(arraysAndObjects.projectArray));
+        console.log(localStorage);
     }
 
-    const setStorage = (key, value) => {
-        localStorage.setItem(key, JSON.stringify(value));
+    const getData = () => {
+
+        arraysAndObjects.taskArray = JSON.parse(localStorage.getItem('taskArray'));
+        arraysAndObjects.projectArray = JSON.parse(localStorage.getItem('projectArray'));;
     }
-    
+
     let defaultProject = new project('My Project', 'My Notes', 'Due this sunday', 0);
     let taskArray = [];
     let projectArray = [defaultProject];
     let selectedProject = 0;
 
-
-
-    return { task, project, projectArray, taskArray, fetchProjectTasks, selectedProject, getStorage, setStorage };
+    return { task, project, projectArray, taskArray, fetchProjectTasks, selectedProject, setData, getData };
 })();
 
 const domMods = (() => {
@@ -148,6 +147,8 @@ const projectsTasks = (() => {
                 projects();
                 projectList();
                 taskList();
+
+                arraysAndObjects.setData();
             }
 
             document.getElementById(`project-list-${arraysAndObjects.selectedProject}`).style.backgroundColor = 'white';
@@ -172,6 +173,9 @@ const projectsTasks = (() => {
         const temp = new arraysAndObjects.task(formTitle, formDescription, formPriority, formNotes, formDue, selectedProject);
         arraysAndObjects.taskArray.push(temp);
         console.log(`new task`, temp);
+
+        arraysAndObjects.setData();
+
     }
 
     const projectList = () => {
@@ -186,7 +190,6 @@ const projectsTasks = (() => {
             projects();
             projectList();
             taskList();
-
         }
         //creates all saved projects and their associated tasks
         for (let i = 0; i < arraysAndObjects.projectArray.length; i++) {
@@ -268,13 +271,12 @@ const projectsTasks = (() => {
                 projects();
                 projectList();
                 taskList();
+                arraysAndObjects.setData();
             }
         }
     }
 
-
     const submitProject = () => {
-        //the 2 below lines keep project tasks from getting mixed when more than 1 project is created
         let projectArrayLength = arraysAndObjects.projectArray;
 
         const projectTitle = document.getElementById(`project-title`).value;
@@ -293,7 +295,7 @@ const projectsTasks = (() => {
         projects();
         projectList();
         taskList();
-
+        arraysAndObjects.setData();
     }
 
     const projects = () => {
@@ -305,7 +307,6 @@ const projectsTasks = (() => {
 
         document.getElementById('project-button-tab').textContent = 'New Project';
         domMods.createElementAppend('button', 'add-project-button', 'project-button-tab');
-
         domMods.ImgAppend('plus-symbol', plus, 'add-project-button');
 
         document.getElementById('project-tab').onclick = function () {
@@ -314,10 +315,9 @@ const projectsTasks = (() => {
             taskList();
         }
 
-
         document.getElementById('add-project-button').onclick = function () {
 
-            //calling project list refreshes the associated nodes and keeps expanded lists from being persistent through the project form after expanding a list
+            //refreshes the associated nodes and keeps expanded lists from being persistent through the project form after expanding a list
             projects();
             projectList();
             taskList();
@@ -375,6 +375,7 @@ const sidebar = () => {
 }
 
 const home = () => {
+    arraysAndObjects.getData();
 
     domMods.clearContent();
     //TODO write displays live time and date with the current amount of projects and tasks left to complete in the content div
@@ -422,4 +423,5 @@ const footer = () => {
 
 header(), sidebar(), footer(), projectsTasks.projects(), projectsTasks.projectList(), projectsTasks.taskList, home();
 
-//deleting tasks sometimes deselects the project and hiding the task list
+// ctrl+f all projectArray and taskArray pushes or splices and make sure to use localStorage.getItem or setItem appropriatley
+// in order to create a locally stored To Do list for a user
