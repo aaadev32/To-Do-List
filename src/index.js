@@ -32,7 +32,7 @@ const arraysAndObjects = (() => {
     //this function is used to create an array based off of the projectIndex property of task objects which is assigned based off of the selectedProject variable
     const fetchProjectTasks = (index) => {
         let fetchedTasks = [];
-        for (let i = 0; i < taskArray.length; i++) {
+        for (let i = 0; i < arraysAndObjects.taskArray.length; i++) {
             if (arraysAndObjects.taskArray[i].projectIndex == index) {
                 fetchedTasks.push(arraysAndObjects.taskArray[i]);
             }
@@ -49,7 +49,17 @@ const arraysAndObjects = (() => {
     const getData = () => {
 
         arraysAndObjects.taskArray = JSON.parse(localStorage.getItem('taskArray'));
-        arraysAndObjects.projectArray = JSON.parse(localStorage.getItem('projectArray'));;
+        arraysAndObjects.projectArray = JSON.parse(localStorage.getItem('projectArray'));
+
+        if (arraysAndObjects.taskArray == null) {
+            arraysAndObjects.taskArray = [];
+        }
+        if (arraysAndObjects.projectArray == null) {
+            arraysAndObjects.projectArray = [];
+        }
+
+
+        //write a statement checking for values with onclick functions and setting them as such through the DOM
     }
 
     let defaultProject = new project('My Project', 'My Notes', 'Due this sunday', 0);
@@ -59,6 +69,8 @@ const arraysAndObjects = (() => {
 
     return { task, project, projectArray, taskArray, fetchProjectTasks, selectedProject, setData, getData };
 })();
+
+
 
 const domMods = (() => {
     const contentDiv = document.getElementById('content');
@@ -119,6 +131,9 @@ const projectsTasks = (() => {
     const taskList = () => {
         //associatedTasks will create an array of task objects that have the corresponding index of their respective projects
         let associatedTasks = arraysAndObjects.fetchProjectTasks(arraysAndObjects.selectedProject);
+        console.log(arraysAndObjects.selectedProject)
+        console.log(associatedTasks)
+        console.log(arraysAndObjects.taskArray)
         domMods.createElementAppend('div', 'task-list-container', 'content');
 
         for (let i = 0; i < associatedTasks.length; i++) {
@@ -225,6 +240,7 @@ const projectsTasks = (() => {
                 projects();
                 projectList();
                 taskList();
+
             }
 
             document.getElementById(`delete-project-${i}`).onclick = function () {
@@ -352,6 +368,17 @@ const projectsTasks = (() => {
 
     return { submitTask, taskList, projectList, projects, submitProject }
 })();
+arraysAndObjects.getData();
+
+//below if statements stops localStorage fetch in above line from throwing type errors on the following arrays
+if (arraysAndObjects.projectArray == null) {
+    arraysAndObjects.projectArray = [arraysAndObjects.defaultProject];
+}
+if (arraysAndObjects.taskArray == null) {
+    arraysAndObjects.taskArray = [];
+}
+
+
 
 const header = () => {
     document.getElementById('header').style.gridArea = 'hd';
@@ -375,7 +402,6 @@ const sidebar = () => {
 }
 
 const home = () => {
-    arraysAndObjects.getData();
 
     domMods.clearContent();
     //TODO write displays live time and date with the current amount of projects and tasks left to complete in the content div
@@ -420,6 +446,7 @@ const footer = () => {
     console.log(document.getElementById('footer-content'))
 
 }
+
 
 header(), sidebar(), footer(), projectsTasks.projects(), projectsTasks.projectList(), projectsTasks.taskList, home();
 
