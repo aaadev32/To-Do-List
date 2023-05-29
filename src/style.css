@@ -161,7 +161,7 @@ body {
 }
 
 .project-list-items {
-    overflow: scroll;
+    overflow: auto
     height: 20px;
     width: 120px;
 }
@@ -179,7 +179,7 @@ body {
 
 .task-list-items{
     width: 120px;
-    overflow: scroll;
+    overflow: auto;
 }
 
 .expanded-task-list {
